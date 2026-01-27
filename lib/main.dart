@@ -67,6 +67,13 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
+class SplashScreen extends StatefulWidget {
+  const SplashScreen({super.key});
+
+  @override
+  State<SplashScreen> createState() => _SplashScreenState();
+}
+
 class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
@@ -81,6 +88,21 @@ class _SplashScreenState extends State<SplashScreen> {
       }
     });
   }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFF0F1113),
+      body: Center(
+        child: Image.asset(
+          'assets/splash.png', 
+          width: 250, 
+          fit: BoxFit.contain,
+        ), // Image.asset
+      ), // Center
+    ); // Scaffold
+  } // build
+} // SplashScreen class
 
   @override
   Widget build(BuildContext context) {
