@@ -23,6 +23,10 @@ jobs:
         with:
           channel: 'stable'
 
+      # Clean the slate to avoid the "Already watching path" error
+      - name: Flutter Clean
+        run: flutter clean
+
       - name: Install dependencies
         run: flutter pub get
 
@@ -31,15 +35,11 @@ jobs:
 
       - name: Force Global Java 17 Override
         run: |
-          # 1. Force the root gradle properties
           echo "targetCompatibility=17" >> android/gradle.properties
           echo "sourceCompatibility=17" >> android/gradle.properties
           echo "kotlin.jvm.target=17" >> android/gradle.properties
 
-          # 2. Inject a global override into the main build.gradle
-          # This forces every plugin (like audioplayers) to use Java 17 regardless of their own settings
           cat <<EOT >> android/build.gradle
-
           subprojects {
               tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
                   kotlinOptions {
@@ -65,11 +65,13 @@ jobs:
       - name: Generate Splash Screen
         run: flutter pub run flutter_native_splash:create
 
+      # Added --no-pub to speed things up and avoid watcher conflicts
       - name: Build Release APK
-        run: flutter build apk --release
+        run: flutter build apk --release --no-pub
 
+      # This version finds the APK regardless of which build subfolder it ended up in
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: release-apk
-          path: build/app/outputs/flutter-apk/app-release.apk
+          path: "**/build/app/outputs/flutter-apk/*.apk"
