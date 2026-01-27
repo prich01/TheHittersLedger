@@ -1,39 +1,40 @@
-name: Build APK
-on: [push]
+name: Build Flutter APK
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-java@v4
+      - name: Set up Java
+        uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '17'
-          
-      - uses: subosito/flutter-action@v2
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.19.0'
           channel: 'stable'
 
-      - run: flutter create --project-name=the_hitters_ledger . --platforms=android
+      - name: Install dependencies
+        run: flutter pub get
 
-      # THIS IS THE PATCH FOR THE DUPLICATE CLASS ERROR
-      - name: Patch Android Gradle
-        run: |
-          echo "configurations.all {
-              resolutionStrategy.eachDependency { DependencyResolveDetails details ->
-                  if (details.requested.group == 'org.jetbrains.kotlin') {
-                      details.useVersion '1.8.10'
-                  }
-              }
-          }" >> android/app/build.gradle
+      - name: Generate App Icons
+        run: flutter pub run flutter_launcher_icons
 
-      - run: flutter pub get
-      
-      - run: flutter build apk --release
-      
+      - name: Generate Splash Screen
+        run: flutter pub run flutter_native_splash:create
+
+      - name: Build Release APK
+        run: flutter build apk --release
+
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
