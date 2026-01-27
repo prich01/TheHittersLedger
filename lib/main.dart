@@ -1,3 +1,4 @@
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
 import 'package:share_plus/share_plus.dart';
 import 'package:flutter/material.dart';
@@ -6,7 +7,8 @@ import 'package:intl/intl.dart';
 import 'dart:ui' as ui;
 import 'package:audioplayers/audioplayers.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const HittersLedgerApp());
 }
 
@@ -23,7 +25,7 @@ class HittersLedgerApp extends StatelessWidget {
         primaryColor: const Color(0xFFD4AF37),
         scaffoldBackgroundColor: const Color(0xFF0F1113),
         // FIXED: Changed CardThemeData to CardTheme
-        cardTheme: CardThemeData(
+        cardTheme: CardTheme(
           color: const Color(0xFF1A1D21),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           elevation: 0,
@@ -48,13 +50,13 @@ class HittersLedgerApp extends StatelessWidget {
           focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: Color(0xFFD4AF37))),
         ),
         // FIXED: Changed TabBarThemeData to TabBarTheme
-        tabBarTheme: const TabBarThemeData(
+        tabBarTheme: const TabBarTheme(
           labelColor: Color(0xFFD4AF37),
           unselectedLabelColor: Colors.white38,
           indicatorSize: TabBarIndicatorSize.label,
         ),
       ),
-      home: const HomeScreen(),
+      home:  HomeScreen(),
     );
   }
 }
@@ -152,10 +154,13 @@ class AtBatLog {
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
-  @override
+ @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("THE HITTER'S LEDGER")),
+      appBar: AppBar(
+        title: const Text("THE HITTER'S LEDGER"),
+      ),
+      
       body: Stack(
         children: [
           Positioned.fill(
@@ -174,7 +179,7 @@ class HomeScreen extends StatelessWidget {
                   "RECORD AT-BATS & SCOUT",
                   Icons.analytics_outlined,
                   const Color(0xFFD4AF37),
-                  () => Navigator.push(context, MaterialPageRoute(builder: (context) => const HitterLogScreen())),
+                  () => Navigator.push(context, MaterialPageRoute(builder: (context) =>  HitterLogScreen())),
                 ),
                 const SizedBox(height: 24),
                 Expanded(
@@ -198,7 +203,7 @@ class HomeScreen extends StatelessWidget {
       ),
     );
   }
-
+}
   Widget _buildHeroCard(BuildContext context, String title, String sub, IconData icon, Color color, VoidCallback onTap) {
     return InkWell(
       onTap: onTap,
@@ -252,7 +257,7 @@ class HomeScreen extends StatelessWidget {
       ),
     );
   }
-}
+
 
 // =============================================================================
 // HITTER LOG MODULE
@@ -264,6 +269,97 @@ class HitterLogScreen extends StatefulWidget {
 }
 
 class _HitterLogScreenState extends State<HitterLogScreen> {
+  
+  String _userName = "PLAYER"; // Default name
+  final TextEditingController _nameController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserName(); // Load the name as soon as the app starts
+  }
+
+  // LOAD NAME FROM MEMORY
+  Future<void> _loadUserName() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _userName = prefs.getString('user_name') ?? "";
+    });
+    
+    // If no name is found, ask for it immediately
+    if (_userName.isEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _showNameDialog());
+    }
+  }
+
+  // SAVE NAME TO MEMORY
+  Future<void> _saveUserName(String name) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('user_name', name);
+    setState(() {
+      _userName = name;
+    });
+  }
+
+  // POPUP DIALOG TO ASK FOR NAME
+  void _showNameDialog() {
+    showDialog(
+      barrierDismissible: false, // User must enter a name
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF1A1D21),
+        title: const Text("WELCOME, HITTER", style: TextStyle(color: Color(0xFFD4AF37), fontWeight: FontWeight.bold)),
+        content: TextField(
+          controller: _nameController,
+          decoration: const InputDecoration(hintText: "Enter Your Name"),
+          textCapitalization: TextCapitalization.characters,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              if (_nameController.text.isNotEmpty) {
+                _saveUserName(_nameController.text.toUpperCase());
+                Navigator.pop(context);
+              }
+            },
+            child: const Text("START", style: TextStyle(color: Color(0xFFD4AF37))),
+          ),
+        ],
+      ),
+    );
+  }
+  void _confirmDelete(AtBatLog log) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: const Color(0xFF1A1D21),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          title: const Text("DELETE ENTRY?", 
+            style: TextStyle(color: Color(0xFFD4AF37), fontWeight: FontWeight.bold)),
+          content: Text("Are you sure you want to delete this at-bat against ${log.pitcher}?"),
+          actions: [
+            TextButton(
+              child: const Text("CANCEL", style: TextStyle(color: Colors.white38)),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+            TextButton(
+              child: const Text("DELETE", style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold)),
+              onPressed: () {
+                setState(() {
+                  _allLogs.remove(log);
+                });
+                Navigator.of(context).pop();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("ENTRY DELETED")),
+                );
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
   final List<AtBatLog> _allLogs = [];
   final TextEditingController _searchController = TextEditingController();
   
@@ -375,7 +471,9 @@ class _HitterLogScreenState extends State<HitterLogScreen> {
       length: 6,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text("YOUR LEDGER"),
+          title: Text(
+            _userName == "PLAYER" ? "YOUR LEDGER" : "${_userName}'S LEDGER",
+          ),
           bottom: const TabBar(
             isScrollable: true,
             indicatorColor: Color(0xFFD4AF37),
@@ -413,8 +511,18 @@ class _HitterLogScreenState extends State<HitterLogScreen> {
   }
 
   Widget _buildHistoryTab() {
-    final query = _searchController.text.trim().toLowerCase();
-    List<AtBatLog> results = _allLogs.where((l) => l.pitcher.toLowerCase().contains(query)).toList();
+  final query = _searchController.text.trim().toLowerCase();
+  
+  // Expanded logic to search multiple fields
+  List<AtBatLog> results = _allLogs.where((l) {
+    final searchLower = query.toLowerCase();
+    
+    bool matchesPitcher = l.pitcher.toLowerCase().contains(searchLower);
+    bool matchesTeam = l.team.toLowerCase().contains(searchLower); // Search by team
+    bool matchesDate = l.date.toLowerCase().contains(searchLower); // Search by date
+    
+    return matchesPitcher || matchesTeam || matchesDate;
+  }).toList();
     return Column(children: [
       Padding(
         padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
@@ -524,16 +632,20 @@ class _HitterLogScreenState extends State<HitterLogScreen> {
         title: Text(log.pitcher.toUpperCase(), style: const TextStyle(color: Color(0xFFD4AF37), fontWeight: FontWeight.w900, fontSize: 15)),
         subtitle: Text("${log.result} • ${log.date}", style: const TextStyle(color: Colors.white38, fontSize: 12)),
         // --- NEW CODE STARTS HERE ---
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            IconButton(
-              icon: const Icon(Icons.share, color: Colors.blueAccent, size: 20),
-              onPressed: () => _shareAtBat(log),
-            ),
-            const Icon(Icons.expand_more, color: Colors.white38),
-          ],
-        ),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          IconButton(
+            icon: const Icon(Icons.share, color: Colors.blueAccent, size: 20),
+            onPressed: () => _shareAtBat(log),
+          ),
+          IconButton(
+            icon: const Icon(Icons.delete_outline, color: Colors.redAccent, size: 20),
+            onPressed: () => _confirmDelete(log),
+          ),
+          const Icon(Icons.expand_more, color: Colors.white38),
+        ],
+      ),
         // --- NEW CODE ENDS HERE ---
         children: [
           Padding(
