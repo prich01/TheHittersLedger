@@ -25,7 +25,7 @@ class HittersLedgerApp extends StatelessWidget {
         primaryColor: const Color(0xFFD4AF37),
         scaffoldBackgroundColor: const Color(0xFF0F1113),
         // FIXED: Changed CardThemeData to CardTheme
-        cardTheme: CardTheme(
+        cardTheme: CardThemeData(
           color: const Color(0xFF1A1D21),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           elevation: 0,
@@ -50,7 +50,7 @@ class HittersLedgerApp extends StatelessWidget {
           focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: Color(0xFFD4AF37))),
         ),
         // FIXED: Changed TabBarThemeData to TabBarTheme
-        tabBarTheme: const TabBarTheme(
+        tabBarTheme: const TabBarThemeData(
           labelColor: Color(0xFFD4AF37),
           unselectedLabelColor: Colors.white38,
           indicatorSize: TabBarIndicatorSize.label,
@@ -61,57 +61,6 @@ class HittersLedgerApp extends StatelessWidget {
   }
 }
 
-class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key});
-
-  @override
-  State<SplashScreen> createState() => _SplashScreenState();
-}
-
-class _SplashScreenState extends State<SplashScreen> {
-  @override
-  void initState() {
-    super.initState();
-    // This handles the 2-second timer
-    Timer(const Duration(seconds: 2), () {
-      if (mounted) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const HomeScreen()),
-        );
-      }
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFF0F1113),
-      body: Center(
-        child: Image.asset(
-          'assets/splash.png', 
-          width: 250, 
-          fit: BoxFit.contain,
-        ), // Image.asset
-      ), // Center
-    ); // Scaffold
-  } // build
-} // SplashScreen class
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFF0F1113),
-      body: Center(
-        child: Image.asset(
-          'assets/splash.png', 
-          width: 250, 
-          fit: BoxFit.contain,
-        ),
-      ),
-    );
-  }
-}
 class StadiumLightingPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
@@ -236,12 +185,6 @@ class _SplashScreenState extends State<SplashScreen> {
     );
   }
 }
-
-// =============================================================================
-// HOME SCREEN
-// =============================================================================
-class HomeScreen extends StatelessWidget {
-...
 
 // =============================================================================
 // HOME SCREEN
