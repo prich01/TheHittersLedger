@@ -32,6 +32,15 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
+      # Generate splash FIRST
+      - name: Generate Splash Screen
+        run: flutter pub run flutter_native_splash:create
+
+      # NEW STEP: Force Flutter to re-generate the Plugin Registrant 
+      # This removes the "net.jonhanson.flutter_native_splash" error
+      - name: Refresh Plugin Registry
+        run: flutter pub get
+
       - name: Force Global Java 17 Override
         run: |
           echo "targetCompatibility=17" >> android/gradle.properties
@@ -41,9 +50,7 @@ jobs:
           cat <<EOT >> android/build.gradle
           subprojects {
               tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
-                  kotlinOptions {
-                      jvmTarget = "17"
-                  }
+                  kotlinOptions { jvmTarget = "17" }
               }
               project.afterEvaluate {
                   if (project.hasProperty('android')) {
@@ -61,11 +68,6 @@ jobs:
       - name: Generate App Icons
         run: flutter pub run flutter_launcher_icons
 
-      - name: Generate Splash Screen
-        run: flutter pub run flutter_native_splash:create
-
-      # --- THIS IS THE CHANGE ---
-      # We tell Gradle to build the APK directly to bypass the Flutter tool's "Watcher" error
       - name: Build with Gradle Directly
         run: |
           cd android
