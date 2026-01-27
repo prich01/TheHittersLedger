@@ -25,7 +25,7 @@ class HittersLedgerApp extends StatelessWidget {
         primaryColor: const Color(0xFFD4AF37),
         scaffoldBackgroundColor: const Color(0xFF0F1113),
         // FIXED: Changed CardThemeData to CardTheme
-        cardTheme: CardTheme(
+        cardTheme: CardThemeData(
           color: const Color(0xFF1A1D21),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           elevation: 0,
@@ -50,7 +50,7 @@ class HittersLedgerApp extends StatelessWidget {
           focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: Color(0xFFD4AF37))),
         ),
         // FIXED: Changed TabBarThemeData to TabBarTheme
-        tabBarTheme: const TabBarTheme(
+        tabBarTheme: const TabBarThemeData(
           labelColor: Color(0xFFD4AF37),
           unselectedLabelColor: Colors.white38,
           indicatorSize: TabBarIndicatorSize.label,
