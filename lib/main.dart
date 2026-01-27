@@ -56,11 +56,46 @@ class HittersLedgerApp extends StatelessWidget {
           indicatorSize: TabBarIndicatorSize.label,
         ),
       ),
-      home:  HomeScreen(),
+    home: const SplashScreen(),
     );
   }
 }
+class SplashScreen extends StatefulWidget {
+  const SplashScreen({super.key});
 
+  @override
+  State<SplashScreen> createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // This handles the 2-second timer
+    Timer(const Duration(seconds: 2), () {
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
+        );
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFF0F1113),
+      body: Center(
+        child: Image.asset(
+          'assets/splash.png', 
+          width: 250, 
+          fit: BoxFit.contain,
+        ),
+      ),
+    );
+  }
+}
 class StadiumLightingPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
@@ -146,6 +181,51 @@ class AtBatLog {
     required this.gameLabel, required this.abNumber, required this.swingThought,
   });
 }
+// =============================================================================
+// SPLASH SCREEN
+// =============================================================================
+class SplashScreen extends StatefulWidget {
+  const SplashScreen({super.key});
+
+  @override
+  State<SplashScreen> createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // This timer handles the 2-second wait
+    Timer(const Duration(seconds: 2), () {
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
+        );
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFF0F1113),
+      body: Center(
+        child: Image.asset(
+          'assets/splash.png', 
+          width: 250, // Adjust this based on how big you want your logo
+          fit: BoxFit.contain,
+        ),
+      ),
+    );
+  }
+}
+
+// =============================================================================
+// HOME SCREEN
+// =============================================================================
+class HomeScreen extends StatelessWidget {
+...
 
 // =============================================================================
 // HOME SCREEN
