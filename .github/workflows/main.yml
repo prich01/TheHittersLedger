@@ -29,12 +29,12 @@ jobs:
       - name: Recreate Android platform files
         run: flutter create . --platforms android
 
-      # This part fixes the 'Inconsistent JVM Target' error from the audio plugin
+      # This finds all build files and forces them to Java 17 to fix the AudioPlayer error
       - name: Force Java 17 Compatibility
         run: |
-          sed -i 's/sourceCompatibility = JavaVersion.VERSION_1_8/sourceCompatibility = JavaVersion.VERSION_17/g' android/app/build.gradle
-          sed -i 's/targetCompatibility = JavaVersion.VERSION_1_8/targetCompatibility = JavaVersion.VERSION_17/g' android/app/build.gradle
-          sed -i 's/jvmTarget = "1.8"/jvmTarget = "17"/g' android/app/build.gradle
+          find android -name "build.gradle" -type f -exec sed -i 's/sourceCompatibility = JavaVersion.VERSION_1_8/sourceCompatibility = JavaVersion.VERSION_17/g' {} +
+          find android -name "build.gradle" -type f -exec sed -i 's/targetCompatibility = JavaVersion.VERSION_1_8/targetCompatibility = JavaVersion.VERSION_17/g' {} +
+          find android -name "build.gradle" -type f -exec sed -i 's/jvmTarget = "1.8"/jvmTarget = "17"/g' {} +
 
       - name: Generate App Icons
         run: flutter pub run flutter_launcher_icons
