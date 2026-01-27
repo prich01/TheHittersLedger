@@ -29,12 +29,35 @@ jobs:
       - name: Recreate Android platform files
         run: flutter create . --platforms android
 
-      # This finds all build files and forces them to Java 17 to fix the AudioPlayer error
-      - name: Force Java 17 Compatibility
+      - name: Force Global Java 17 Override
         run: |
-          find android -name "build.gradle" -type f -exec sed -i 's/sourceCompatibility = JavaVersion.VERSION_1_8/sourceCompatibility = JavaVersion.VERSION_17/g' {} +
-          find android -name "build.gradle" -type f -exec sed -i 's/targetCompatibility = JavaVersion.VERSION_1_8/targetCompatibility = JavaVersion.VERSION_17/g' {} +
-          find android -name "build.gradle" -type f -exec sed -i 's/jvmTarget = "1.8"/jvmTarget = "17"/g' {} +
+          # 1. Force the root gradle properties
+          echo "targetCompatibility=17" >> android/gradle.properties
+          echo "sourceCompatibility=17" >> android/gradle.properties
+          echo "kotlin.jvm.target=17" >> android/gradle.properties
+
+          # 2. Inject a global override into the main build.gradle
+          # This forces every plugin (like audioplayers) to use Java 17 regardless of their own settings
+          cat <<EOT >> android/build.gradle
+
+          subprojects {
+              tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+                  kotlinOptions {
+                      jvmTarget = "17"
+                  }
+              }
+              project.afterEvaluate {
+                  if (project.hasProperty('android')) {
+                      android {
+                          compileOptions {
+                              sourceCompatibility JavaVersion.VERSION_17
+                              targetCompatibility JavaVersion.VERSION_17
+                          }
+                      }
+                  }
+              }
+          }
+          EOT
 
       - name: Generate App Icons
         run: flutter pub run flutter_launcher_icons
