@@ -17,6 +17,25 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^2.0.0
+  flutter_launcher_icons: ^0.13.1
+  flutter_native_splash: ^2.4.0
+
+# This section defines your App Icon
+flutter_launcher_icons:
+  android: "launcher_icon"
+  image_path: "assets/icon.png"
+  min_sdk_android: 21
+
+# This section defines your Splash Screen
+flutter_native_splash:
+  color: "#ffffff"
+  image: "assets/splash.png"
+  android_12:
+    image: "assets/splash.png"
+    icon_background_color: "#ffffff"
 
 flutter:
   uses-material-design: true
+  # Ensures the app knows to look in your assets folder
+  assets:
+    - assets/
