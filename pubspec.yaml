@@ -12,6 +12,7 @@ dependencies:
   share_plus: ^7.1.0
   intl: ^0.18.1
   audioplayers: 4.1.0
+  shared_preferences: ^2.2.0
 
 dev_dependencies:
   flutter_test:
@@ -26,16 +27,17 @@ flutter_launcher_icons:
   image_path: "assets/icon.png"
   min_sdk_android: 21
 
-# This section defines your Splash Screen
+# This section defines your Native Splash Screen (used by the OS)
 flutter_native_splash:
-  color: "#ffffff"
+  color: "#0F1113"
   image: "assets/splash.png"
   android_12:
     image: "assets/splash.png"
-    icon_background_color: "#ffffff"
+    icon_background_color: "#0F1113"
 
 flutter:
   uses-material-design: true
-  # Ensures the app knows to look in your assets folder
+  
   assets:
     - assets/
+    - assets/splash.png
