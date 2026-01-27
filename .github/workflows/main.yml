@@ -17,8 +17,18 @@ jobs:
           flutter-version: '3.19.0'
           channel: 'stable'
 
-      # Forces the project name to be lowercase to avoid the "TheHittersLedger" error
       - run: flutter create --project-name=the_hitters_ledger . --platforms=android
+
+      # THIS IS THE PATCH FOR THE DUPLICATE CLASS ERROR
+      - name: Patch Android Gradle
+        run: |
+          echo "configurations.all {
+              resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+                  if (details.requested.group == 'org.jetbrains.kotlin') {
+                      details.useVersion '1.8.10'
+                  }
+              }
+          }" >> android/app/build.gradle
 
       - run: flutter pub get
       
