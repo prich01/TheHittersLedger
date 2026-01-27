@@ -26,15 +26,19 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      # This creates the android folder that your repo is missing
       - name: Recreate Android platform files
         run: flutter create . --platforms android
 
-      # This injects your logo into the newly created android folder
+      # This part fixes the 'Inconsistent JVM Target' error from the audio plugin
+      - name: Force Java 17 Compatibility
+        run: |
+          sed -i 's/sourceCompatibility = JavaVersion.VERSION_1_8/sourceCompatibility = JavaVersion.VERSION_17/g' android/app/build.gradle
+          sed -i 's/targetCompatibility = JavaVersion.VERSION_1_8/targetCompatibility = JavaVersion.VERSION_17/g' android/app/build.gradle
+          sed -i 's/jvmTarget = "1.8"/jvmTarget = "17"/g' android/app/build.gradle
+
       - name: Generate App Icons
         run: flutter pub run flutter_launcher_icons
 
-      # This injects your splash screen into the newly created android folder
       - name: Generate Splash Screen
         run: flutter pub run flutter_native_splash:create
 
