@@ -1,4 +1,4 @@
-name: hitters_ledger
+name: the_hitters_ledger
 description: Baseball mental performance app.
 publish_to: 'none'
 version: 1.0.0+1
