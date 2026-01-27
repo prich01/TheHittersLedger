@@ -23,19 +23,15 @@ jobs:
         with:
           channel: 'stable'
 
-      # 1. Start fresh
       - name: Flutter Clean
         run: flutter clean
 
-      # 2. Recreate the missing android folder FIRST
       - name: Recreate Android platform files
         run: flutter create . --platforms android
 
-      # 3. NOW install dependencies so they link to the new android folder
       - name: Install dependencies
         run: flutter pub get
 
-      # 4. Apply the Java 17 fixes to the newly linked plugins
       - name: Force Global Java 17 Override
         run: |
           echo "targetCompatibility=17" >> android/gradle.properties
@@ -62,19 +58,22 @@ jobs:
           }
           EOT
 
-      # 5. Generate the assets
       - name: Generate App Icons
         run: flutter pub run flutter_launcher_icons
 
       - name: Generate Splash Screen
         run: flutter pub run flutter_native_splash:create
 
-      # 6. Build with the standard command (allow it to sync)
-      - name: Build Release APK
-        run: flutter build apk --release
+      # --- THIS IS THE CHANGE ---
+      # We tell Gradle to build the APK directly to bypass the Flutter tool's "Watcher" error
+      - name: Build with Gradle Directly
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleRelease
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: release-apk
-          path: "**/build/app/outputs/flutter-apk/*.apk"
+          path: "**/build/app/outputs/apk/release/*.apk"
