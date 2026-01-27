@@ -32,14 +32,15 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      # Generate splash FIRST
       - name: Generate Splash Screen
         run: flutter pub run flutter_native_splash:create
 
-      # NEW STEP: Force Flutter to re-generate the Plugin Registrant 
-      # This removes the "net.jonhanson.flutter_native_splash" error
-      - name: Refresh Plugin Registry
-        run: flutter pub get
+      # --- THE MAGIC FIX ---
+      # This line finds the broken "SplashPlugin" reference and deletes it so the build can finish
+      - name: Remove Broken Splash Reference
+        run: |
+          sed -i '/FlutterNativeSplashPlugin/d' android/app/src/main/java/io/flutter/plugins/GeneratedPluginRegistrant.java
+      # ---------------------
 
       - name: Force Global Java 17 Override
         run: |
