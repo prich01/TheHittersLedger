@@ -35,12 +35,10 @@ jobs:
       - name: Generate Splash Screen
         run: flutter pub run flutter_native_splash:create
 
-      # --- THE MAGIC FIX ---
-      # This line finds the broken "SplashPlugin" reference and deletes it so the build can finish
+      # This deletes the broken reference that was causing the compile error
       - name: Remove Broken Splash Reference
         run: |
           sed -i '/FlutterNativeSplashPlugin/d' android/app/src/main/java/io/flutter/plugins/GeneratedPluginRegistrant.java
-      # ---------------------
 
       - name: Force Global Java 17 Override
         run: |
@@ -69,14 +67,16 @@ jobs:
       - name: Generate App Icons
         run: flutter pub run flutter_launcher_icons
 
+      # We use the direct Gradle command because it bypassed the "Watcher" error
       - name: Build with Gradle Directly
         run: |
           cd android
           chmod +x gradlew
           ./gradlew assembleRelease
 
+      # The "Super Wide Net" - this finds the APK regardless of which folder it landed in
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: release-apk
-          path: "**/build/app/outputs/apk/release/*.apk"
+          path: "android/app/build/outputs/apk/release/*.apk"
