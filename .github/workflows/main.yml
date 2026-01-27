@@ -23,16 +23,19 @@ jobs:
         with:
           channel: 'stable'
 
-      # Clean the slate to avoid the "Already watching path" error
+      # 1. Start fresh
       - name: Flutter Clean
         run: flutter clean
 
-      - name: Install dependencies
-        run: flutter pub get
-
+      # 2. Recreate the missing android folder FIRST
       - name: Recreate Android platform files
         run: flutter create . --platforms android
 
+      # 3. NOW install dependencies so they link to the new android folder
+      - name: Install dependencies
+        run: flutter pub get
+
+      # 4. Apply the Java 17 fixes to the newly linked plugins
       - name: Force Global Java 17 Override
         run: |
           echo "targetCompatibility=17" >> android/gradle.properties
@@ -59,17 +62,17 @@ jobs:
           }
           EOT
 
+      # 5. Generate the assets
       - name: Generate App Icons
         run: flutter pub run flutter_launcher_icons
 
       - name: Generate Splash Screen
         run: flutter pub run flutter_native_splash:create
 
-      # Added --no-pub to speed things up and avoid watcher conflicts
+      # 6. Build with the standard command (allow it to sync)
       - name: Build Release APK
-        run: flutter build apk --release --no-pub
+        run: flutter build apk --release
 
-      # This version finds the APK regardless of which build subfolder it ended up in
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
