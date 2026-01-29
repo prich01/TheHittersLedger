@@ -143,25 +143,80 @@ class Pitch {
 }
 
 class AtBatLog {
-  final String pitcher, team, hand, velocity, result, notes, date, gameLabel, swingThought;
-  final List<Pitch> pitches;
-  final int abNumber;
+  final String pitcher;
+  final String team;
+  final String date;
+  final String hand;
+  final String velocity;
+  final String result;
+  final String swingThought;
+  final String notes;
   final bool isQAB;
+  final List<Pitch> pitches;
 
   AtBatLog({
-    required this.pitcher, required this.team, required this.hand,
-    required this.velocity, required this.result, required this.pitches,
-    required this.notes, required this.date, required this.isQAB,
-    required this.gameLabel, required this.abNumber, required this.swingThought,
+    required this.pitcher,
+    required this.team,
+    required this.date,
+    required this.hand,
+    required this.velocity,
+    required this.result,
+    required this.swingThought,
+    required this.notes,
+    required this.isQAB,
+    required this.pitches,
   });
+
+  // --- These functions go INSIDE the class braces ---
+  Map<String, dynamic> toJson() => {
+    'pitcher': pitcher,
+    'team': team,
+    'date': date,
+    'hand': hand,
+    'velocity': velocity,
+    'result': result,
+    'swingThought': swingThought,
+    'notes': notes,
+    'isQAB': isQAB,
+    'pitches': pitches.map((p) => p.toJson()).toList(),
+  };
+
+  static AtBatLog fromJson(Map<String, dynamic> json) => AtBatLog(
+    pitcher: json['pitcher'] ?? '',
+    team: json['team'] ?? '',
+    date: json['date'] ?? '',
+    hand: json['hand'] ?? '',
+    velocity: json['velocity'] ?? '',
+    result: json['result'] ?? '',
+    swingThought: json['swingThought'] ?? '',
+    notes: json['notes'] ?? '',
+    isQAB: json['isQAB'] ?? false,
+    pitches: (json['pitches'] as List? ?? []).map((p) => Pitch.fromJson(p)).toList(),
+  );
 }
+
 // =============================================================================
 // SPLASH SCREEN
 // =============================================================================
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
+  @override
+  State<SplashScreen> createState() => _SplashScreenState();
+}
 
+class _SplashScreenState extends State<SplashScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // This timer tells the app to wait 3 seconds, then move to the Home screen
+    Timer(const Duration(seconds: 3), () {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+      );
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -170,7 +225,7 @@ class SplashScreen extends StatefulWidget {
       body: Center(
         child: Image.asset(
           'assets/splash.png', 
-          width: 250, // Adjust this based on how big you want your logo
+          width: 250, 
           fit: BoxFit.contain,
         ),
       ),
@@ -297,24 +352,7 @@ class HomeScreen extends StatelessWidget {
 
 // 1. AT-BAT LOG MODEL (Standing alone, outside other classes)
 
-  Map<String, dynamic> toJson() => {
-    'pitcher': pitcher,
-    'teamName': teamName,
-    'date': date,
-    'result': result,
-    'pitches': pitches.map((p) => p.toJson()).toList(),
-    'notes': notes,
-  };
-
-  static AtBatLog fromJson(Map<String, dynamic> json) => AtBatLog(
-    pitcherName: json['pitcherName'],
-    teamName: json['teamName'],
-    date: json['date'],
-    result: json['result'],
-    pitches: (json['pitches'] as List).map((p) => Pitch.fromJson(p)).toList(),
-    note: json['note'] ?? '',
-  );
-}
+ 
 
 // 2. THE SCREEN WIDGET
 class HitterLogScreen extends StatefulWidget {
