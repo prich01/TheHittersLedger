@@ -161,24 +161,7 @@ class AtBatLog {
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
-  @override
-  State<SplashScreen> createState() => _SplashScreenState();
-}
 
-class _SplashScreenState extends State<SplashScreen> {
-  @override
-  void initState() {
-    super.initState();
-    // This timer handles the 2-second wait
-    Timer(const Duration(seconds: 2), () {
-      if (mounted) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const HomeScreen()),
-        );
-      }
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -315,12 +298,12 @@ class HomeScreen extends StatelessWidget {
 // 1. AT-BAT LOG MODEL (Standing alone, outside other classes)
 
   Map<String, dynamic> toJson() => {
-    'pitcherName': pitcherName,
+    'pitcher': pitcher,
     'teamName': teamName,
     'date': date,
     'result': result,
     'pitches': pitches.map((p) => p.toJson()).toList(),
-    'note': note,
+    'notes': notes,
   };
 
   static AtBatLog fromJson(Map<String, dynamic> json) => AtBatLog(
