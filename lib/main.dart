@@ -307,31 +307,12 @@ class HomeScreen extends StatelessWidget {
   }
 
 
-// =============================================================================
-// HITTER LOG MODULE
-// =============================================================================
 
 // =============================================================================
 // HITTER LOG MODULE
 // =============================================================================
 
 // 1. AT-BAT LOG MODEL (Standing alone, outside other classes)
-class AtBatLog {
-  final String pitcherName;
-  final String teamName;
-  final String date;
-  final String result;
-  final List<Pitch> pitches;
-  final String note;
-
-  AtBatLog({
-    required this.pitcherName,
-    required this.teamName,
-    required this.date,
-    required this.result,
-    required this.pitches,
-    this.note = '',
-  });
 
   Map<String, dynamic> toJson() => {
     'pitcherName': pitcherName,
@@ -362,7 +343,7 @@ class HitterLogScreen extends StatefulWidget {
 class _HitterLogScreenState extends State<HitterLogScreen> {
   // YOUR VARIABLES START HERE
   final List<AtBatLog> _allLogs = [];
-  String _userName = "PLAYER"; 
+  
   
   // YOUR FUNCTIONS (Save/Load)
   Future<void> _saveLogs() async {
@@ -475,7 +456,7 @@ class _HitterLogScreenState extends State<HitterLogScreen> {
       },
     );
   }
-  final List<AtBatLog> _allLogs = [];
+  
   final TextEditingController _searchController = TextEditingController();
   
   String _selectedHandFilter = "All";
