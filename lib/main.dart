@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
 import 'package:share_plus/share_plus.dart';
@@ -131,6 +132,15 @@ class Pitch {
     this.isFoul = false, 
     this.isMiss = false
   });
+  class Pitch {
+  // ... existing fields ...
+  Map<String, dynamic> toJson() => {
+    'dx': location.dx, 'dy': location.dy, 'type': type, 'color': color.value, 'isFoul': isFoul, 'isMiss': isMiss
+  };
+  static Pitch fromJson(Map<String, dynamic> json) => Pitch(
+    location: Offset(json['dx'], json['dy']), type: json['type'], color: Color(json['color']), isFoul: json['isFoul'], isMiss: json['isMiss']
+  );
+}
 }
 
 class AtBatLog {
@@ -308,6 +318,41 @@ class HitterLogScreen extends StatefulWidget {
 }
 
 class _HitterLogScreenState extends State<HitterLogScreen> {
+  class AtBatLog {
+  final String pitcherName;
+  final String teamName;
+  final String date;
+  final String result;
+  final List<Pitch> pitches;
+  final String note;
+
+  AtBatLog({
+    required this.pitcherName,
+    required this.teamName,
+    required this.date,
+    required this.result,
+    required this.pitches,
+    this.note = '',
+  });
+
+  Map<String, dynamic> toJson() => {
+    'pitcherName': pitcherName,
+    'teamName': teamName,
+    'date': date,
+    'result': result,
+    'pitches': pitches.map((p) => p.toJson()).toList(),
+    'note': note,
+  };
+
+  static AtBatLog fromJson(Map<String, dynamic> json) => AtBatLog(
+    pitcherName: json['pitcherName'],
+    teamName: json['teamName'],
+    date: json['date'],
+    result: json['result'],
+    pitches: (json['pitches'] as List).map((p) => Pitch.fromJson(p)).toList(),
+    note: json['note'] ?? '',
+  );
+}
   
   String _userName = "PLAYER"; // Default name
   final TextEditingController _nameController = TextEditingController();
@@ -315,6 +360,7 @@ class _HitterLogScreenState extends State<HitterLogScreen> {
   @override
   void initState() {
     super.initState();
+    _loadLogs();
     _loadUserName(); // Load the name as soon as the app starts
   }
 
@@ -542,6 +588,7 @@ class _HitterLogScreenState extends State<HitterLogScreen> {
           onPressed: () async {
             final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => EntryForm(pData: _pData)));
             if (result != null && result is AtBatLog) setState(() => _allLogs.insert(0, result));
+            _saveLogs();
           },
           child: const Icon(Icons.add, color: Colors.black),
         ),
