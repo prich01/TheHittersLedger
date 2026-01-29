@@ -153,6 +153,8 @@ class AtBatLog {
   final String notes;
   final bool isQAB;
   final List<Pitch> pitches;
+  final String gameLabel; // ADD THIS
+  final int abNumber;     // ADD THIS
 
   AtBatLog({
     required this.pitcher,
@@ -165,9 +167,10 @@ class AtBatLog {
     required this.notes,
     required this.isQAB,
     required this.pitches,
+    required this.gameLabel, // ADD THIS
+    required this.abNumber,   // ADD THIS
   });
 
-  // --- These functions go INSIDE the class braces ---
   Map<String, dynamic> toJson() => {
     'pitcher': pitcher,
     'team': team,
@@ -179,6 +182,8 @@ class AtBatLog {
     'notes': notes,
     'isQAB': isQAB,
     'pitches': pitches.map((p) => p.toJson()).toList(),
+    'gameLabel': gameLabel, // ADD THIS
+    'abNumber': abNumber,   // ADD THIS
   };
 
   static AtBatLog fromJson(Map<String, dynamic> json) => AtBatLog(
@@ -192,6 +197,8 @@ class AtBatLog {
     notes: json['notes'] ?? '',
     isQAB: json['isQAB'] ?? false,
     pitches: (json['pitches'] as List? ?? []).map((p) => Pitch.fromJson(p)).toList(),
+    gameLabel: json['gameLabel'] ?? '', // ADD THIS
+    abNumber: json['abNumber'] ?? 1,    // ADD THIS
   );
 }
 
