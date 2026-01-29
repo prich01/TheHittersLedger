@@ -132,7 +132,7 @@ class Pitch {
     this.isFoul = false, 
     this.isMiss = false
   });
-  class Pitch {
+ 
   // ... existing fields ...
   Map<String, dynamic> toJson() => {
     'dx': location.dx, 'dy': location.dy, 'type': type, 'color': color.value, 'isFoul': isFoul, 'isMiss': isMiss
@@ -140,7 +140,6 @@ class Pitch {
   static Pitch fromJson(Map<String, dynamic> json) => Pitch(
     location: Offset(json['dx'], json['dy']), type: json['type'], color: Color(json['color']), isFoul: json['isFoul'], isMiss: json['isMiss']
   );
-}
 }
 
 class AtBatLog {
@@ -312,13 +311,12 @@ class HomeScreen extends StatelessWidget {
 // HITTER LOG MODULE
 // =============================================================================
 
-class HitterLogScreen extends StatefulWidget {
-  const HitterLogScreen({super.key});
-  @override State<HitterLogScreen> createState() => _HitterLogScreenState();
-}
+// =============================================================================
+// HITTER LOG MODULE
+// =============================================================================
 
-class _HitterLogScreenState extends State<HitterLogScreen> {
-  class AtBatLog {
+// 1. AT-BAT LOG MODEL (Standing alone, outside other classes)
+class AtBatLog {
   final String pitcherName;
   final String teamName;
   final String date;
@@ -353,7 +351,39 @@ class _HitterLogScreenState extends State<HitterLogScreen> {
     note: json['note'] ?? '',
   );
 }
+
+// 2. THE SCREEN WIDGET
+class HitterLogScreen extends StatefulWidget {
+  const HitterLogScreen({super.key});
+  @override State<HitterLogScreen> createState() => _HitterLogScreenState();
+}
+
+// 3. THE SCREEN STATE (Where the logic lives)
+class _HitterLogScreenState extends State<HitterLogScreen> {
+  // YOUR VARIABLES START HERE
+  final List<AtBatLog> _allLogs = [];
+  String _userName = "PLAYER"; 
   
+  // YOUR FUNCTIONS (Save/Load)
+  Future<void> _saveLogs() async {
+    final prefs = await SharedPreferences.getInstance();
+    final String encodedData = jsonEncode(_allLogs.map((log) => log.toJson()).toList());
+    await prefs.setString('all_at_bats', encodedData);
+  }
+
+  Future<void> _loadLogs() async {
+    final prefs = await SharedPreferences.getInstance();
+    final String? savedData = prefs.getString('all_at_bats');
+    if (savedData != null) {
+      final List decoded = jsonDecode(savedData);
+      setState(() {
+        _allLogs.clear();
+        _allLogs.addAll(decoded.map((item) => AtBatLog.fromJson(item)).toList());
+      });
+    }
+  }
+
+  // ... the rest of your build code ...
   String _userName = "PLAYER"; // Default name
   final TextEditingController _nameController = TextEditingController();
 
