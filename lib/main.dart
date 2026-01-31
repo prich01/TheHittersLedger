@@ -296,7 +296,7 @@ class HomeScreen extends StatelessWidget {
   _buildMenuCard(context, "5 TRUTHS", Icons.bolt, const Color(0xFF448AFF), const SimpleTruthsScreen()),
   _buildMenuCard(context, "IMAGERY", Icons.remove_red_eye_outlined, const Color(0xFFE040FB), const MentalImageryScreen()),
   _buildMenuCard(context, "SWING THOUGHTS", Icons.psychology_outlined, const Color(0xFF69F0AE), const SwingThoughtsScreen()),
-  _buildMenuCard(context, "CAGE ROUTINES", Icons.sports_baseball_outlined, const Color(0xFFFF5252), CageRoutinesScreen()),
+  _buildMenuCard(context, "CAGE ROUTINES", Icons.sports_baseball_outlined, Color(0xFFFF5252), const CageRoutinesScreen()),
 ],
                   ),
                 ),
