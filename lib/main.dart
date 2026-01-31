@@ -292,12 +292,12 @@ class HomeScreen extends StatelessWidget {
                     crossAxisCount: 2,
                     crossAxisSpacing: 16,
                     mainAxisSpacing: 16,
-                    children: [
-                      _buildMenuCard(context, "5 TRUTHS", Icons.bolt, Colors.blueAccent, const SimpleTruthsScreen()),
-                      _buildMenuCard(context, "IMAGERY", Icons.remove_red_eye_outlined, Colors.purpleAccent, const MentalImageryScreen()),
-                      _buildMenuCard(context, "SWING THOUGHTS", Icons.psychology_outlined, Colors.greenAccent, const SwingThoughtsScreen()),
-                      _buildMenuCard(context, "CAGE ROUTINES", Icons.sports_baseball_outlined, Colors.redAccent, const CageRoutinesScreen()),
-                    ],
+                   children: [
+  _buildMenuCard(context, "5 TRUTHS", Icons.bolt, const Color(0xFF448AFF), const SimpleTruthsScreen()),
+  _buildMenuCard(context, "IMAGERY", Icons.remove_red_eye_outlined, const Color(0xFFE040FB), const MentalImageryScreen()),
+  _buildMenuCard(context, "SWING THOUGHTS", Icons.psychology_outlined, const Color(0xFF69F0AE), const SwingThoughtsScreen()),
+  _buildMenuCard(context, "CAGE ROUTINES", Icons.sports_baseball_outlined, const Color(0xFFFF5252), const CageRoutinesScreen()),
+],
                   ),
                 ),
               ],
