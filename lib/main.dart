@@ -1540,7 +1540,7 @@ class _RakeMethodScreenState extends State<RakeMethodScreen> {
                 border: Border.all(color: const Color(0xFFD4AF37).withOpacity(0.2)),
               ),
               child: Column(
-                children: const [
+                children:  [
                   Text("PRACTICE DAILY", style: TextStyle(fontWeight: FontWeight.w900, color: Color(0xFFD4AF37), letterSpacing: 1)),
                   SizedBox(height: 8),
                   Text(
