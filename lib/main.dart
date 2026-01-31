@@ -292,11 +292,11 @@ class HomeScreen extends StatelessWidget {
     crossAxisCount: 2,
     crossAxisSpacing: 16,
     mainAxisSpacing: 16,
-    children: [
-      _buildMenuCard(context, "5 TRUTHS", Icons.bolt, Colors.blueAccent, const SimpleTruthsScreen()),
-      _buildMenuCard(context, "IMAGERY", Icons.remove_red_eye_outlined, Colors.purpleAccent, const MentalImageryScreen()),
-      _buildMenuCard(context, "SWING THOUGHTS", Icons.psychology_outlined, Colors.greenAccent, const SwingThoughtsScreen()),
-      _buildMenuCard(context, "CAGE ROUTINES", Icons.sports_baseball_outlined, Colors.redAccent, const CageRoutinesScreen()),
+   children: [
+      _buildMenuCard(context, "5 TRUTHS", Icons.bolt, Colors.blue, const SimpleTruthsScreen()),
+      _buildMenuCard(context, "IMAGERY", Icons.remove_red_eye_outlined, Colors.purple, const MentalImageryScreen()),
+      _buildMenuCard(context, "SWING THOUGHTS", Icons.psychology_outlined, Colors.green, const SwingThoughtsScreen()),
+      _buildMenuCard(context, "CAGE ROUTINES", Icons.sports_baseball_outlined, Colors.red, const CageRoutinesScreen()),
     ],
   ),
 ),
@@ -1714,12 +1714,12 @@ class SwingThoughtsScreen extends StatelessWidget {
   }
 }
 
-class CageRoutineScreen extends StatefulWidget {
-  const CageRoutineScreen({super.key});
-  @override State<CageRoutineScreen> createState() => _CageRoutineScreenState();
+class CageRoutinesScreen extends StatefulWidget {
+  const CageRoutinesScreen({super.key});
+  @override State<CageRoutinesScreen> createState() => _CageRoutinesScreenState();
 }
 
-class _CageRoutineScreenState extends State<CageRoutineScreen> {
+class _CageRoutinesScreenState extends State<CageRoutinesScreen> {
   List<CageRoutine> _allRoutines = [];
   String _searchQuery = "";
   final TextEditingController _searchController = TextEditingController();
