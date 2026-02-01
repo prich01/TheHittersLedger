@@ -1608,50 +1608,65 @@ class _RakeMethodScreenState extends State<RakeMethodScreen> {
               ),
             ),
 
-            // --- RAKE TITLE AND AUDIO TOGGLE BUTTON ---
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text("R-A-K-E", style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: Color(0xFFD4AF37))),
-                    const Text("METHOD OF MENTAL IMAGERY", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white38)),
-                  ],
-                ),
-                ElevatedButton.icon(
-                  onPressed: () async {
-                    if (_isAudioPlaying) {
-                      await _audioPlayer.stop();
-                      setState(() => _isAudioPlaying = false);
-                    } else {
-                      await _audioPlayer.play(UrlSource('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'));
-                      setState(() => _isAudioPlaying = true);
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: _isAudioPlaying ? Colors.redAccent.withOpacity(0.1) : const Color(0xFF1A1D21),
-                    side: BorderSide(color: _isAudioPlaying ? Colors.redAccent : const Color(0xFFD4AF37), width: 1),
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                  ),
-                  icon: Icon(
-                    _isAudioPlaying ? Icons.stop_circle : Icons.play_circle_fill, 
-                    color: _isAudioPlaying ? Colors.redAccent : const Color(0xFFD4AF37), 
-                    size: 18
-                  ),
-                  label: Text(
-                    _isAudioPlaying ? "STOP AUDIO" : "RAKE AUDIO", 
-                    style: TextStyle(
-                      color: _isAudioPlaying ? Colors.redAccent : Colors.white, 
-                      fontSize: 10, 
-                      fontWeight: FontWeight.bold
-                    )
-                  ),
-                ),
-              ],
-            ),
+        // --- RAKE TITLE AND AUDIO TOGGLE BUTTON ---
+Column(
+  crossAxisAlignment: CrossAxisAlignment.start,
+  children: [
+    Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.center, // Vertically aligns button with "R-A-K-E"
+      children: [
+        const Text(
+          "R-A-K-E", 
+          style: TextStyle(
+            fontSize: 24, 
+            fontWeight: FontWeight.w900, 
+            color: Color(0xFFD4AF37)
+          )
+        ),
+        ElevatedButton.icon(
+          onPressed: () async {
+            if (_isAudioPlaying) {
+              await _audioPlayer.stop();
+              setState(() => _isAudioPlaying = false);
+            } else {
+              await _audioPlayer.play(UrlSource('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'));
+              setState(() => _isAudioPlaying = true);
+            }
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: _isAudioPlaying ? Colors.redAccent.withOpacity(0.1) : const Color(0xFF1A1D21),
+            side: BorderSide(color: _isAudioPlaying ? Colors.redAccent : const Color(0xFFD4AF37), width: 1),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          ),
+          icon: Icon(
+            _isAudioPlaying ? Icons.stop_circle : Icons.play_circle_fill, 
+            color: _isAudioPlaying ? Colors.redAccent : const Color(0xFFD4AF37), 
+            size: 18
+          ),
+          label: Text(
+            _isAudioPlaying ? "STOP AUDIO" : "RAKE AUDIO", 
+            style: TextStyle(
+              color: _isAudioPlaying ? Colors.redAccent : Colors.white, 
+              fontSize: 10, 
+              fontWeight: FontWeight.bold
+            )
+          ),
+        ),
+      ],
+    ),
+    const SizedBox(height: 4), // Small gap between title and subtitle
+    const Text(
+      "METHOD OF MENTAL IMAGERY", 
+      style: TextStyle(
+        fontSize: 12, 
+        fontWeight: FontWeight.bold, 
+        color: Colors.white38
+      )
+    ),
+  ],
+),
 
             const SizedBox(height: 32),
             _buildRakeStep("RELAX", "6-2-8 BREATHING", "Inhale 6 seconds, Hold 2 seconds, Exhale 8 seconds.", Icons.air_outlined, Colors.blueAccent),
