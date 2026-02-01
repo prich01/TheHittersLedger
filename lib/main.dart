@@ -790,14 +790,13 @@ class _HitterLogScreenState extends State<HitterLogScreen> {
     Text(l, style: const TextStyle(fontSize: 8, color: Colors.white38, fontWeight: FontWeight.bold))
   ]);
 
- Widget _buildHistoryCard(AtBatLog log) {
-  // Generate or fetch the unique key for this specific log entry
-  // We use the timestamp or ID to ensure the key stays linked to this specific data
-  final String logId = log.id.isEmpty ? "${log.date}_${log.pitcher}" : log.id;
+Widget _buildHistoryCard(AtBatLog log) {
+  // We use the pitcher name and date to create a unique ID since 'id' isn't defined
+  final String logId = "${log.pitcher}_${log.date}"; 
   _atBatKeys[logId] ??= GlobalKey();
   final GlobalKey cardKey = _atBatKeys[logId]!;
 
-  // We wrap the Card in a RepaintBoundary so we can capture it as an image
+  // The RepaintBoundary acts as the "camera lens" for this specific card
   return RepaintBoundary(
     key: cardKey,
     child: Card(
@@ -821,7 +820,7 @@ class _HitterLogScreenState extends State<HitterLogScreen> {
           children: [
             IconButton(
               icon: const Icon(Icons.share, color: Colors.blueAccent, size: 20),
-              // This now triggers the visual capture function
+              // This calls the capture function we added earlier
               onPressed: () => _captureAndShare(cardKey, log.pitcher, log.result),
             ),
             IconButton(
