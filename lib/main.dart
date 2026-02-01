@@ -1440,10 +1440,11 @@ class _PitchersDuelScreenState extends State<PitchersDuelScreen> {
                     await _audioPlayer.stop();
                     setState(() => _isAudioPlaying = false);
                   } else {
-                    // Using a reliable test link
-                    await _audioPlayer.play(UrlSource('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'));
-                    setState(() => _isAudioPlaying = true);
-                  }
+  // Use AssetSource for files inside your project
+  // DO NOT include the word "assets/" in this string
+  await _audioPlayer.play(AssetSource('rake_meditation.mp3'));
+  setState(() => _isAudioPlaying = true);
+}
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: _isAudioPlaying ? Colors.redAccent.withOpacity(0.1) : const Color(0xFF1A1D21),
@@ -1516,7 +1517,11 @@ class _RakeMethodScreenState extends State<RakeMethodScreen> {
       setState(() => _isAudioPlaying = false);
     });
   }
-
+@override
+void dispose() {
+  _audioPlayer.dispose(); // This kills the player when the page is closed
+  super.dispose();
+}
   void _toggleBreathing() {
     if (_isActive) {
       _timer?.cancel();
