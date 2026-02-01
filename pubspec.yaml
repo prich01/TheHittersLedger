@@ -9,7 +9,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  share_plus: ^7.1.0
+  share_plus: ^10.1.0
+  path_provider: ^2.1.2
   intl: ^0.18.1
   audioplayers: 4.1.0
   shared_preferences: ^2.2.0
