@@ -243,18 +243,30 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0F1113),
-      body: Center(
-        child: Image.asset(
-          'assets/splash.png', 
-          width: 250, 
-          fit: BoxFit.contain,
-        ),
+      // We use a Stack to layer the logo ON TOP of the background
+      body: Stack(
+        children: [
+          // 1. The Background Layer (Fills the entire screen)
+          Positioned.fill(
+            child: Image.asset(
+              'assets/stadium_bg.png', 
+              fit: BoxFit.cover, // This stretches/crops to ensure no black bars
+            ),
+          ),
+          
+          // 2. The Logo Layer (Stays centered and proportional)
+          Center(
+            child: Image.asset(
+              'assets/hl_logo.png',
+              width: 280, // Adjusted slightly larger for impact
+              fit: BoxFit.contain,
+            ),
+          ),
+        ],
       ),
     );
   }
 }
-
 // =============================================================================
 // HOME SCREEN
 // =============================================================================
