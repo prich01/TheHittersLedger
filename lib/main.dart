@@ -791,12 +791,48 @@ class _HitterLogScreenState extends State<HitterLogScreen> {
   ]);
 
 Widget _buildHistoryCard(AtBatLog log) {
-  // We use the pitcher name and date to create a unique ID since 'id' isn't defined
+  // 1. Generate the unique key for this specific log entry
   final String logId = "${log.pitcher}_${log.date}"; 
   _atBatKeys[logId] ??= GlobalKey();
   final GlobalKey cardKey = _atBatKeys[logId]!;
 
-  // The RepaintBoundary acts as the "camera lens" for this specific card
+  // 2. Updated Legend helper with your specific colors and labels
+  Widget buildInlineLegend() {
+    final Map<String, Color> pitchColors = {
+      "Fastball": Colors.red, 
+      "Slider": Colors.blue, 
+      "Curveball": Colors.cyan, 
+      "Changeup": Colors.green, 
+      "Cutter": Colors.orange, 
+      "Other": Colors.purple
+    };
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: pitchColors.entries.map((entry) {
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 4),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 8,
+                height: 8,
+                decoration: BoxDecoration(color: entry.value, shape: BoxShape.circle),
+              ),
+              const SizedBox(width: 6),
+              Text(
+                entry.key.toUpperCase(), // Makes it look clean like the rest of your UI
+                style: const TextStyle(color: Colors.white70, fontSize: 9, fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  // 3. Return the RepaintBoundary wrapping the Card
   return RepaintBoundary(
     key: cardKey,
     child: Card(
@@ -820,7 +856,6 @@ Widget _buildHistoryCard(AtBatLog log) {
           children: [
             IconButton(
               icon: const Icon(Icons.share, color: Colors.blueAccent, size: 20),
-              // This calls the capture function we added earlier
               onPressed: () => _captureAndShare(cardKey, log.pitcher, log.result),
             ),
             IconButton(
@@ -859,7 +894,13 @@ Widget _buildHistoryCard(AtBatLog log) {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildMiniMap(log.pitches),
+                    Column(
+                      children: [
+                        _buildMiniMap(log.pitches),
+                        const SizedBox(height: 12),
+                        buildInlineLegend(),
+                      ],
+                    ),
                     const SizedBox(width: 20),
                     Expanded(
                       child: Text(
@@ -881,7 +922,6 @@ Widget _buildHistoryCard(AtBatLog log) {
     ),
   );
 }
-
   Widget _buildSeasonStatsTab() {
     return ListView(
       physics: const ClampingScrollPhysics(),
