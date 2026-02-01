@@ -1631,7 +1631,7 @@ Column(
               await _audioPlayer.stop();
               setState(() => _isAudioPlaying = false);
             } else {
-              await _audioPlayer.play(UrlSource('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'));
+              await _audioPlayer.play(AssetSource('rake_meditation.mp3'));
               setState(() => _isAudioPlaying = true);
             }
           },
