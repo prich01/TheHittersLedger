@@ -537,7 +537,7 @@ class _HitterLogScreenState extends State<HitterLogScreen> {
   String _firstHandFilter = "All";
   String _firstPitchFilter = "All"; 
   
-  bool _resultPitchOnly = false; 
+  bool _resultPitchOnly = true; 
 
   final Map<String, Color> _pData = {
     "Fastball": Colors.red, "Slider": Colors.blue, "Curveball": Colors.cyan, 
