@@ -1517,11 +1517,7 @@ class _RakeMethodScreenState extends State<RakeMethodScreen> {
       setState(() => _isAudioPlaying = false);
     });
   }
-@override
-void dispose() {
-  _audioPlayer.dispose(); // This kills the player when the page is closed
-  super.dispose();
-}
+
   void _toggleBreathing() {
     if (_isActive) {
       _timer?.cancel();
@@ -1563,11 +1559,11 @@ void dispose() {
   }
 
   @override
-  void dispose() {
-    _timer?.cancel();
-     // Stops audio when leaving screen
-    super.dispose();
-  }
+void dispose() {
+  _audioPlayer.dispose(); // Cleans up the audio player
+  // If you have a TabController or AnimationController, dispose them here too!
+  super.dispose();        // Always keep this as the very last line
+}
 
   @override
   Widget build(BuildContext context) {
