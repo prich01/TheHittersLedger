@@ -1,12 +1,16 @@
 import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
-import 'package:share_plus/share_plus.dart';
+import 'dart:ui' as ui;           // Required for image processing
+import 'dart:io';               // Required for saving the temporary file
+import 'dart:typed_data';       // Required for handling the image bytes
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart'; 
+import 'package:flutter/services.dart';
+import 'package:flutter/rendering.dart'; // Required for the RepaintBoundary logic
 import 'package:intl/intl.dart';
-import 'dart:ui' as ui;
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:path_provider/path_provider.dart'; // Required for temporary storage
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -382,6 +386,32 @@ class HitterLogScreen extends StatefulWidget {
 class _HitterLogScreenState extends State<HitterLogScreen> {
   // YOUR VARIABLES START HERE
   final List<AtBatLog> _allLogs = [];
+  // ADD THIS: A map to hold the keys for each card
+  final Map<String, GlobalKey> _atBatKeys = {};
+
+  // ADD THIS: The logic to turn the card into an image
+  Future<void> _captureAndShare(GlobalKey key, String pitcherName, String result) async {
+    try {
+      RenderRepaintBoundary? boundary = key.currentContext?.findRenderObject() as RenderRepaintBoundary?;
+      if (boundary == null) return;
+
+      ui.Image image = await boundary.toImage(pixelRatio: 3.0);
+      ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+      Uint8List pngBytes = byteData!.buffer.asUint8List();
+
+      final directory = await getTemporaryDirectory();
+      final String fileName = 'at_bat_${DateTime.now().millisecondsSinceEpoch}.png';
+      final File imageFile = File('${directory.path}/$fileName');
+      await imageFile.writeAsBytes(pngBytes);
+
+      await Share.shareXFiles(
+        [XFile(imageFile.path)],
+        text: "At-Bat vs $pitcherName ($result) - Shared from The Hitter's Ledger",
+      );
+    } catch (e) {
+      debugPrint("Error capturing/sharing: $e");
+    }
+  }
   
   
   // YOUR FUNCTIONS (Save/Load)
@@ -760,50 +790,98 @@ class _HitterLogScreenState extends State<HitterLogScreen> {
     Text(l, style: const TextStyle(fontSize: 8, color: Colors.white38, fontWeight: FontWeight.bold))
   ]);
 
-  Widget _buildHistoryCard(AtBatLog log) {
-    return Card(
+ Widget _buildHistoryCard(AtBatLog log) {
+  // Generate or fetch the unique key for this specific log entry
+  // We use the timestamp or ID to ensure the key stays linked to this specific data
+  final String logId = log.id.isEmpty ? "${log.date}_${log.pitcher}" : log.id;
+  _atBatKeys[logId] ??= GlobalKey();
+  final GlobalKey cardKey = _atBatKeys[logId]!;
+
+  // We wrap the Card in a RepaintBoundary so we can capture it as an image
+  return RepaintBoundary(
+    key: cardKey,
+    child: Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       child: ExpansionTile(
         iconColor: const Color(0xFFD4AF37),
-        title: Text(log.pitcher.toUpperCase(), style: const TextStyle(color: Color(0xFFD4AF37), fontWeight: FontWeight.w900, fontSize: 15)),
-        subtitle: Text("${log.result} • ${log.date}", style: const TextStyle(color: Colors.white38, fontSize: 12)),
-        // --- NEW CODE STARTS HERE ---
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          IconButton(
-            icon: const Icon(Icons.share, color: Colors.blueAccent, size: 20),
-            onPressed: () => _shareAtBat(log),
+        title: Text(
+          log.pitcher.toUpperCase(),
+          style: const TextStyle(
+            color: Color(0xFFD4AF37),
+            fontWeight: FontWeight.w900,
+            fontSize: 15,
           ),
-          IconButton(
-            icon: const Icon(Icons.delete_outline, color: Colors.redAccent, size: 20),
-            onPressed: () => _confirmDelete(log),
-          ),
-          const Icon(Icons.expand_more, color: Colors.white38),
-        ],
-      ),
-        // --- NEW CODE ENDS HERE ---
+        ),
+        subtitle: Text(
+          "${log.result} • ${log.date}",
+          style: const TextStyle(color: Colors.white38, fontSize: 12),
+        ),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+              icon: const Icon(Icons.share, color: Colors.blueAccent, size: 20),
+              // This now triggers the visual capture function
+              onPressed: () => _captureAndShare(cardKey, log.pitcher, log.result),
+            ),
+            IconButton(
+              icon: const Icon(Icons.delete_outline, color: Colors.redAccent, size: 20),
+              onPressed: () => _confirmDelete(log),
+            ),
+            const Icon(Icons.expand_more, color: Colors.white38),
+          ],
+        ),
         children: [
           Padding(
             padding: const EdgeInsets.all(20),
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text("TEAM: ${log.team} | ${log.hand}HP | VELO: ${log.velocity}", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.white70)),
-              const Divider(height: 24, color: Colors.white10),
-              if (log.swingThought.isNotEmpty) ...[
-                Text("THOUGHT: ${log.swingThought}", style: const TextStyle(color: Colors.greenAccent, fontWeight: FontWeight.bold, fontSize: 13)),
-                const SizedBox(height: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "TEAM: ${log.team} | ${log.hand}HP | VELO: ${log.velocity}",
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
+                    color: Colors.white70,
+                  ),
+                ),
+                const Divider(height: 24, color: Colors.white10),
+                if (log.swingThought.isNotEmpty) ...[
+                  Text(
+                    "THOUGHT: ${log.swingThought}",
+                    style: const TextStyle(
+                      color: Colors.greenAccent,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 13,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                ],
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildMiniMap(log.pitches),
+                    const SizedBox(width: 20),
+                    Expanded(
+                      child: Text(
+                        "NOTES: ${log.notes}",
+                        style: const TextStyle(
+                          color: Colors.white54,
+                          fontSize: 13,
+                          height: 1.5,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ],
-              Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                _buildMiniMap(log.pitches),
-                const SizedBox(width: 20),
-                Expanded(child: Text("NOTES: ${log.notes}", style: const TextStyle(color: Colors.white54, fontSize: 13, height: 1.5))),
-              ]),
-            ]),
+            ),
           )
         ],
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildSeasonStatsTab() {
     return ListView(
