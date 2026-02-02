@@ -544,7 +544,7 @@ class _HitterLogScreenState extends State<HitterLogScreen> {
                   ..._seasons.map((s) => ListTile(
                         title: Text(s, style: TextStyle(color: s == _activeSeason ? const Color(0xFFD4AF37) : Colors.white)),
                         trailing: s == _activeSeason ? const Icon(Icons.check, color: Color(0xFFD4AF37)) : null,
-                        onPressed: () {
+                        onTap: () {
                           setState(() => _activeSeason = s);
                           _saveSeasons();
                           Navigator.pop(context);
@@ -616,11 +616,11 @@ class _HitterLogScreenState extends State<HitterLogScreen> {
           actions: [
             TextButton(
               child: const Text("CANCEL", style: TextStyle(color: Colors.white38)),
-              onPressed: () => Navigator.of(context).pop(),
+         : () => Navigator.of(context).pop(),
             ),
             TextButton(
               child: const Text("DELETE", style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold)),
-              onPressed: () {
+         : () {
                 setState(() {
                   _allLogs.remove(log);
                 });
@@ -765,7 +765,7 @@ class _HitterLogScreenState extends State<HitterLogScreen> {
                     fontWeight: FontWeight.bold
                   ),
                 ),
-                onPressed: () => _showSeasonPicker(context),
+           : () => _showSeasonPicker(context),
               ),
             ),
           ],
@@ -796,7 +796,7 @@ class _HitterLogScreenState extends State<HitterLogScreen> {
         ),
         floatingActionButton: FloatingActionButton(
           backgroundColor: const Color(0xFFD4AF37),
-          onPressed: () async {
+     : () async {
             final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => EntryForm(pData: _pData)));
             if (result != null && result is AtBatLog) setState(() => _allLogs.insert(0, result));
             _saveLogs();
@@ -1453,7 +1453,7 @@ class _EntryFormState extends State<EntryForm> {
         const SizedBox(height: 12),
         TextField(controller: _notes, decoration: const InputDecoration(labelText: "NOTES")),
         const SizedBox(height: 32),
-        SizedBox(width: double.infinity, height: 55, child: ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFD4AF37), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))), onPressed: () => Navigator.pop(context, AtBatLog(pitcher: _pitcher.text, team: _team.text, hand: _hand, velocity: _velo.text, result: _res, pitches: List.from(_sequence), notes: _notes.text, date: _date.text, gameLabel: "", abNumber: _selectedAB, isQAB: _qab, swingThought: _swingThought.text)), child: const Text("SAVE TO LEDGER", style: TextStyle(color: Colors.black, fontWeight: FontWeight.w900, letterSpacing: 1.5)))),
+        SizedBox(width: double.infinity, height: 55, child: ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFD4AF37), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))), onPressed: () => Navigator.pop(context, AtBatLog(pitcher: _pitcher.text, team: _team.text, hand: _hand, velocity: _velo.text, result: _res, pitches: List.from(_sequence), notes: _notes.text, date: _date.text, gameLabel: "", abNumber: _selectedAB, isQAB: _qab, swingThought: _swingThought.text, season: "")), child: const Text("SAVE TO LEDGER", style: TextStyle(color: Colors.black, fontWeight: FontWeight.w900, letterSpacing: 1.5)))),
         const SizedBox(height: 40),
       ])),
     );
