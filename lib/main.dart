@@ -616,11 +616,11 @@ class _HitterLogScreenState extends State<HitterLogScreen> {
           actions: [
             TextButton(
               child: const Text("CANCEL", style: TextStyle(color: Colors.white38)),
-         : () => Navigator.of(context).pop(),
+         onPressed: () => Navigator.of(context).pop(),
             ),
             TextButton(
               child: const Text("DELETE", style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold)),
-         : () {
+         onPressed: () {
                 setState(() {
                   _allLogs.remove(log);
                 });
@@ -765,7 +765,7 @@ class _HitterLogScreenState extends State<HitterLogScreen> {
                     fontWeight: FontWeight.bold
                   ),
                 ),
-           : () => _showSeasonPicker(context),
+           onPressed: () => _showSeasonPicker(context),
               ),
             ),
           ],
@@ -796,7 +796,7 @@ class _HitterLogScreenState extends State<HitterLogScreen> {
         ),
         floatingActionButton: FloatingActionButton(
           backgroundColor: const Color(0xFFD4AF37),
-     : () async {
+     onPressed: () async {
             final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => EntryForm(pData: _pData)));
             if (result != null && result is AtBatLog) setState(() => _allLogs.insert(0, result));
             _saveLogs();
