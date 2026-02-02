@@ -170,6 +170,7 @@ class AtBatLog {
   final List<Pitch> pitches;
   final String gameLabel; // ADD THIS
   final int abNumber;     // ADD THIS
+  final String season;
 
   AtBatLog({
     required this.pitcher,
@@ -184,6 +185,7 @@ class AtBatLog {
     required this.pitches,
     required this.gameLabel, // ADD THIS
     required this.abNumber,   // ADD THIS
+    required this.season,
   });
 
   Map<String, dynamic> toJson() => {
@@ -199,6 +201,7 @@ class AtBatLog {
     'pitches': pitches.map((p) => p.toJson()).toList(),
     'gameLabel': gameLabel, // ADD THIS
     'abNumber': abNumber,   // ADD THIS
+    'season': season,
   };
 
   static AtBatLog fromJson(Map<String, dynamic> json) => AtBatLog(
@@ -214,6 +217,7 @@ class AtBatLog {
     pitches: (json['pitches'] as List? ?? []).map((p) => Pitch.fromJson(p)).toList(),
     gameLabel: json['gameLabel'] ?? '', // ADD THIS
     abNumber: json['abNumber'] ?? 1,    // ADD THIS
+    season: json['season'] ?? 'SPRING 2026',
   );
 }
 
@@ -398,6 +402,10 @@ class HitterLogScreen extends StatefulWidget {
 class _HitterLogScreenState extends State<HitterLogScreen> {
   // YOUR VARIABLES START HERE
   final List<AtBatLog> _allLogs = [];
+  // --- ADD THESE SEASON VARIABLES ---
+  List<String> _seasons = ['SPRING 2026']; // Initial default season
+  String _activeSeason = 'SPRING 2026';    // The currently selected season
+  // ----------------------------------
   // ADD THIS: A map to hold the keys for each card
   final Map<String, GlobalKey> _atBatKeys = {};
 
@@ -453,7 +461,8 @@ class _HitterLogScreenState extends State<HitterLogScreen> {
   void initState() {
     super.initState();
     _loadLogs();
-    _loadUserName(); // Load the name as soon as the app starts
+    _loadUserName();
+    _loadSeasons(); // ADD THIS LINE
   }
 
   // LOAD NAME FROM MEMORY
@@ -477,6 +486,95 @@ class _HitterLogScreenState extends State<HitterLogScreen> {
       _userName = name;
     });
   }
+  // SAVE SEASONS TO MEMORY
+  Future<void> _saveSeasons() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList('user_seasons', _seasons);
+    await prefs.setString('active_season', _activeSeason);
+  }
+
+  // LOAD SEASONS FROM MEMORY
+  Future<void> _loadSeasons() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _seasons = prefs.getStringList('user_seasons') ?? ['SPRING 2026'];
+      _activeSeason = prefs.getString('active_season') ?? _seasons.first;
+    });
+  }
+
+  // HELPER TO ADD A NEW SEASON
+  Future<String?> _showNewSeasonInput() async {
+    String? newName;
+    await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF1A1D21),
+        title: const Text("NEW SEASON NAME", style: TextStyle(color: Color(0xFFD4AF37), fontSize: 14)),
+        content: TextField(
+          autofocus: true,
+          decoration: const InputDecoration(hintText: "e.g. FALL BALL 2026"),
+          textCapitalization: TextCapitalization.characters,
+          onChanged: (value) => newName = value.toUpperCase(),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text("CANCEL")),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("ADD", style: TextStyle(color: Color(0xFFD4AF37))),
+          ),
+        ],
+      ),
+    );
+    return newName;
+  }
+  void _showSeasonPicker(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (context) {
+      return StatefulBuilder(
+        builder: (context, setDialogState) {
+          return AlertDialog(
+            backgroundColor: const Color(0xFF1A1D21),
+            title: const Text("SELECT SEASON", style: TextStyle(color: Color(0xFFD4AF37), fontSize: 14)),
+            content: SizedBox(
+              width: double.maxFinite,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ..._seasons.map((s) => ListTile(
+                        title: Text(s, style: TextStyle(color: s == _activeSeason ? const Color(0xFFD4AF37) : Colors.white)),
+                        trailing: s == _activeSeason ? const Icon(Icons.check, color: Color(0xFFD4AF37)) : null,
+                        onPressed: () {
+                          setState(() => _activeSeason = s);
+                          _saveSeasons();
+                          Navigator.pop(context);
+                        },
+                      )),
+                  const Divider(color: Colors.white24),
+                  TextButton.icon(
+                    icon: const Icon(Icons.add, size: 18, color: Color(0xFFD4AF37)),
+                    label: const Text("ADD NEW SEASON", style: TextStyle(color: Color(0xFFD4AF37))),
+                    onPressed: () async {
+                      String? newName = await _showNewSeasonInput();
+                      if (newName != null && newName.isNotEmpty) {
+                        setDialogState(() {
+                          if (!_seasons.contains(newName)) _seasons.add(newName);
+                          _activeSeason = newName;
+                        });
+                        setState(() {}); 
+                        _saveSeasons();
+                      }
+                    },
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+    },
+  );
+}
 
   // POPUP DIALOG TO ASK FOR NAME
   void _showNameDialog() {
@@ -650,7 +748,28 @@ class _HitterLogScreenState extends State<HitterLogScreen> {
         appBar: AppBar(
           title: Text(
             _userName == "PLAYER" ? "YOUR LEDGER" : "${_userName}'S LEDGER",
+            style: const TextStyle(fontSize: 14), 
           ),
+          // --- PASTE THIS SECTION ---
+          actions: [
+            Padding(
+              padding: const EdgeInsets.only(right: 8.0),
+              child: ActionChip(
+                backgroundColor: const Color(0xFF1A1D21),
+                side: const BorderSide(color: Color(0xFFD4AF37), width: 0.5),
+                label: Text(
+                  _activeSeason,
+                  style: const TextStyle(
+                    color: Color(0xFFD4AF37), 
+                    fontSize: 10, 
+                    fontWeight: FontWeight.bold
+                  ),
+                ),
+                onPressed: () => _showSeasonPicker(context),
+              ),
+            ),
+          ],
+          // ---------------------------
           bottom: const TabBar(
             isScrollable: true,
             indicatorColor: Color(0xFFD4AF37),
@@ -688,19 +807,21 @@ class _HitterLogScreenState extends State<HitterLogScreen> {
     );
   }
 
-  Widget _buildHistoryTab() {
-  final query = _searchController.text.trim().toLowerCase();
-  
-  // Expanded logic to search multiple fields
-  List<AtBatLog> results = _allLogs.where((l) {
-    final searchLower = query.toLowerCase();
-    
-    bool matchesPitcher = l.pitcher.toLowerCase().contains(searchLower);
-    bool matchesTeam = l.team.toLowerCase().contains(searchLower); // Search by team
-    bool matchesDate = l.date.toLowerCase().contains(searchLower); // Search by date
-    
-    return matchesPitcher || matchesTeam || matchesDate;
-  }).toList();
+Widget _buildHistoryTab() {
+    final query = _searchController.text.trim().toLowerCase();
+
+    // 1. FIRST: Filter all logs by the Active Season selected in the top bar
+    List<AtBatLog> seasonalResults = _allLogs.where((l) => l.season == _activeSeason).toList();
+
+    // 2. SECOND: Filter those seasonal results by the search query
+    List<AtBatLog> results = seasonalResults.where((l) {
+      if (query.isEmpty) return true;
+      final searchLower = query.toLowerCase();
+      return l.pitcher.toLowerCase().contains(searchLower) ||
+             l.team.toLowerCase().contains(searchLower) ||
+             l.date.toLowerCase().contains(searchLower);
+    }).toList();
+
     return Column(children: [
       Padding(
         padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
@@ -729,8 +850,8 @@ class _HitterLogScreenState extends State<HitterLogScreen> {
       ),
       const Divider(color: Colors.white10, height: 1),
       Expanded(
-        child: _allLogs.isEmpty 
-          ? const Center(child: Text("NO RECORDS FOUND", style: TextStyle(color: Colors.white24, letterSpacing: 1.5, fontSize: 12)))
+        child: seasonalResults.isEmpty 
+          ? Center(child: Text("NO RECORDS FOUND FOR $_activeSeason", style: const TextStyle(color: Colors.white24, letterSpacing: 1.5, fontSize: 12)))
           : ListView(
               physics: const ClampingScrollPhysics(),
               children: [
@@ -935,24 +1056,30 @@ Widget _buildHistoryCard(AtBatLog log) {
   );
 }
   Widget _buildSeasonStatsTab() {
-    return ListView(
-      physics: const ClampingScrollPhysics(),
-      padding: const EdgeInsets.all(24),
-      children: [
-        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          _largeStatCard("AVG", _calculateAVG(_allLogs), const Color(0xFFD4AF37)),
-          _largeStatCard("SLG", _calculateSLG(_allLogs), Colors.blueAccent),
-          _largeStatCard("OBP", _calculateOBP(_allLogs), Colors.greenAccent),
-        ]),
-        const SizedBox(height: 32),
-        _buildStatRow("TOTAL HITS", "${_allLogs.where((l) => ["1B", "2B", "3B", "HR", "Bunt Single"].contains(l.result)).length}"),
-        _buildStatRow("WALKS (BB/HBP)", "${_allLogs.where((l) => ["BB", "HBP"].contains(l.result)).length}"),
-        _buildStatRow("STRIKEOUTS (K)", "${_allLogs.where((l) => l.result == "K").length}"),
-        _buildStatRow("QABS RECORDED", "${_allLogs.where((l)=>l.isQAB).length}"),
-        _buildStatRow("OVERALL CHASE", "${_calculateChaseRate(_allLogs).toStringAsFixed(1)}%"),
-        _buildStatRow("OVERALL 1ST PITCH", "${_calculateFirstPitchSwing(_allLogs).toStringAsFixed(1)}%"),
-      ]);
-  }
+  // 1. Create a filtered list for the active season
+  final seasonalLogs = _allLogs.where((l) => l.season == _activeSeason).toList();
+
+  return ListView(
+    physics: const ClampingScrollPhysics(),
+    padding: const EdgeInsets.all(24),
+    children: [
+      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+        // 2. Pass 'seasonalLogs' instead of '_allLogs' to the stat calculators
+        _largeStatCard("AVG", _calculateAVG(seasonalLogs), const Color(0xFFD4AF37)),
+        _largeStatCard("SLG", _calculateSLG(seasonalLogs), Colors.blueAccent),
+        _largeStatCard("OBP", _calculateOBP(seasonalLogs), Colors.greenAccent),
+      ]),
+      const SizedBox(height: 32),
+      // 3. Update the rows to count from 'seasonalLogs'
+      _buildStatRow("TOTAL HITS", "${seasonalLogs.where((l) => ["1B", "2B", "3B", "HR", "Bunt Single"].contains(l.result)).length}"),
+      _buildStatRow("WALKS (BB/HBP)", "${seasonalLogs.where((l) => ["BB", "HBP"].contains(l.result)).length}"),
+      _buildStatRow("STRIKEOUTS (K)", "${seasonalLogs.where((l) => l.result == "K").length}"),
+      _buildStatRow("QABS RECORDED", "${seasonalLogs.where((l)=>l.isQAB).length}"),
+      _buildStatRow("OVERALL CHASE", "${_calculateChaseRate(seasonalLogs).toStringAsFixed(1)}%"),
+      _buildStatRow("OVERALL 1ST PITCH", "${_calculateFirstPitchSwing(seasonalLogs).toStringAsFixed(1)}%"),
+    ],
+  );
+}
 
   Widget _largeStatCard(String label, String val, Color col) => Container(
     width: 100, padding: const EdgeInsets.symmetric(vertical: 20),
@@ -962,7 +1089,7 @@ Widget _buildHistoryCard(AtBatLog log) {
   Widget _buildStatRow(String l, String v) => Padding(padding: const EdgeInsets.symmetric(vertical: 12), child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text(l, style: const TextStyle(fontSize: 13, color: Colors.white54, fontWeight: FontWeight.bold)), Text(v, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w900))]));
 
   Widget _buildHeatMapTab() {
-    List<AtBatLog> filtered = _allLogs.where((l) => _selectedHandFilter == "All" || l.hand == (_selectedHandFilter == "RHP" ? "R" : "L")).toList();
+    List<AtBatLog> filtered = _allLogs.where((l) => l.season == _activeSeason && (_selectedHandFilter == "All" || l.hand == (_selectedHandFilter == "RHP" ? "R" : "L"))).toList();
     return SingleChildScrollView(
       physics: const ClampingScrollPhysics(),
       child: Column(children: [
@@ -999,7 +1126,11 @@ Widget _buildHistoryCard(AtBatLog log) {
 
   // UPDATED UI: Includes Pitcher Hand Dropdown AND QAB Breakdown logic
   Widget _buildStatPage(String title, double Function(List<AtBatLog>) calc, Color col, String mode) {
-    double val = calc(_allLogs);
+    // 1. Create the filtered list for the active season
+    final seasonalLogs = _allLogs.where((l) => l.season == _activeSeason).toList();
+    
+    // 2. Pass the seasonal logs to the calculator instead of _allLogs
+    double val = calc(seasonalLogs);
     String activePitchFilter = mode == "chase" ? _chasePitchFilter : mode == "first" ? _firstPitchFilter : "All";
     String activeHandFilter = mode == "chase" ? _chaseHandFilter : mode == "first" ? _firstHandFilter : "All";
 
@@ -1044,7 +1175,7 @@ Widget _buildHistoryCard(AtBatLog log) {
               const SizedBox(height: 20),
               _buildSimpleBar("VS RHP", 
                 () {
-                  final rLogs = _allLogs.where((l) => l.hand == "R").toList();
+                  final rLogs = seasonalLogs.where((l) => l.hand == "R").toList();
                   if (rLogs.isEmpty) return 0.0;
                   return (rLogs.where((l) => l.isQAB).length / rLogs.length) * 100;
                 }(), 
@@ -1053,7 +1184,7 @@ Widget _buildHistoryCard(AtBatLog log) {
               const SizedBox(height: 20),
               _buildSimpleBar("VS LHP", 
                 () {
-                  final lLogs = _allLogs.where((l) => l.hand == "L").toList();
+                  final lLogs = seasonalLogs.where((l) => l.hand == "L").toList();
                   if (lLogs.isEmpty) return 0.0;
                   return (lLogs.where((l) => l.isQAB).length / lLogs.length) * 100;
                 }(), 
@@ -1065,7 +1196,7 @@ Widget _buildHistoryCard(AtBatLog log) {
         ],
         // ** END NEW QAB CODE **
 
-        if (mode != "qab") _buildZoneMap(_allLogs, mode: mode, pitchTypeFilter: activePitchFilter, handFilter: activeHandFilter),
+        if (mode != "qab") _buildZoneMap(seasonalLogs, mode: mode, pitchTypeFilter: activePitchFilter, handFilter: activeHandFilter),
         const SizedBox(height: 100),
       ]),
     );
