@@ -17,7 +17,19 @@ import 'firebase_options.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  // 1. Launch the UI immediately (no white screen!)
   runApp(const HittersLedgerApp());
+
+  // 2. Try to connect to the database quietly in the background
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    print("⚾ CLOUD STATUS: Firebase is connected and ready!");
+  } catch (e) {
+    print("❌ CLOUD STATUS: Connection failed, but the app is still running. Error: $e");
+  }
 }
 
 class HittersLedgerApp extends StatelessWidget {
