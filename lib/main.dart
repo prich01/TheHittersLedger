@@ -1520,7 +1520,7 @@ class MentalImageryScreen extends StatelessWidget {
         padding: const EdgeInsets.all(24),
         children: [
           _buildImageryTile(context, "THE RAKE METHOD", "RELAX, ACKNOWLEDGE, KNOW, EXPERIENCE", Icons.air, Colors.blueAccent, const RakeMethodScreen()),
-          _buildImageryTile(context, "PITCHER'S DUEL SCRIPT", "VISUALIZING SUCCESS AT THE PLATE", Icons.menu_book, Colors.purpleAccent, const PitchersDuelScreen()),
+          _buildImageryTile(context, "PITCHER'S  SCRIPT", "VISUALIZING SUCCESS AT THE PLATE", Icons.menu_book, Colors.purpleAccent, const PitchersDuelScreen()),
           _buildImageryTile(context, "IDENTIFY YOUR ROUTINE", "BUILD YOUR RESET BUTTON", Icons.edit_calendar, Colors.orangeAccent, const IdentifyRoutineScreen()),
         ],
       ),
@@ -1588,7 +1588,7 @@ class _PitchersDuelScreenState extends State<PitchersDuelScreen> {
                   } else {
   // Use AssetSource for files inside your project
   // DO NOT include the word "assets/" in this string
-  await _audioPlayer.play(AssetSource('rake_meditation.mp3'));
+  await _audioPlayer.play(AssetSource('pitchers_duel.mp3'));
   setState(() => _isAudioPlaying = true);
 }
                 },
