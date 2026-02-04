@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart'; // Add this for User objects
 import 'auth_screen.dart';
 import 'services/cloud_service.dart';           // Add this to link your new file
@@ -129,22 +130,50 @@ class Pitch {
   final Color color;
   final bool isFoul;
   final bool isMiss; 
+  final bool isStrike;
+  final bool isChase;
+  final bool isSwing;
 
   Pitch({
     required this.location, 
     required this.type, 
     required this.color, 
     this.isFoul = false, 
-    this.isMiss = false
+    this.isMiss = false,
+    this.isStrike = false,
+    this.isChase = false,
+    this.isSwing = false,
   });
- 
-  // ... existing fields ...
-  Map<String, dynamic> toJson() => {
-    'dx': location.dx, 'dy': location.dy, 'type': type, 'color': color.value, 'isFoul': isFoul, 'isMiss': isMiss
-  };
-  static Pitch fromJson(Map<String, dynamic> json) => Pitch(
-    location: Offset(json['dx'], json['dy']), type: json['type'], color: Color(json['color']), isFoul: json['isFoul'], isMiss: json['isMiss']
-  );
+
+  factory Pitch.fromMap(Map<String, dynamic> map) {
+    return Pitch(
+      location: Offset(
+        (map['x'] ?? 0.0).toDouble(), 
+        (map['y'] ?? 0.0).toDouble()
+      ),
+      type: map['type'] ?? '',
+      color: Color(map['color'] ?? 0xFF000000),
+      isFoul: map['isFoul'] ?? false,
+      isMiss: map['isMiss'] ?? false,
+      isStrike: map['isStrike'] ?? false,
+      isChase: map['isChase'] ?? false,
+      isSwing: map['isSwing'] ?? false,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'x': location.dx,
+      'y': location.dy,
+      'type': type,
+      'color': color.value,
+      'isFoul': isFoul,
+      'isMiss': isMiss,
+      'isStrike': isStrike,
+      'isChase': isChase,
+      'isSwing': isSwing,
+    };
+  }
 }
 
 class AtBatLog {
@@ -158,8 +187,8 @@ class AtBatLog {
   final String notes;
   final bool isQAB;
   final List<Pitch> pitches;
-  final String gameLabel; // ADD THIS
-  final int abNumber;     // ADD THIS
+  final String gameLabel;
+  final int abNumber;
   final String season;
 
   AtBatLog({
@@ -173,43 +202,49 @@ class AtBatLog {
     required this.notes,
     required this.isQAB,
     required this.pitches,
-    required this.gameLabel, // ADD THIS
-    required this.abNumber,   // ADD THIS
+    required this.gameLabel,
+    required this.abNumber,
     required this.season,
   });
 
-  Map<String, dynamic> toJson() => {
-    'pitcher': pitcher,
-    'team': team,
-    'date': date,
-    'hand': hand,
-    'velocity': velocity,
-    'result': result,
-    'swingThought': swingThought,
-    'notes': notes,
-    'isQAB': isQAB,
-    'pitches': pitches.map((p) => p.toJson()).toList(),
-    'gameLabel': gameLabel, // ADD THIS
-    'abNumber': abNumber,   // ADD THIS
-    'season': season,
-  };
+  factory AtBatLog.fromMap(Map<String, dynamic> map) {
+    return AtBatLog(
+      pitcher: map['pitcher'] ?? '',
+      team: map['team'] ?? '',
+      date: map['date'] ?? '',
+      hand: map['hand'] ?? 'R',
+      velocity: map['velocity'] ?? '',
+      result: map['result'] ?? '',
+      swingThought: map['swingThought'] ?? '',
+      notes: map['notes'] ?? '',
+      isQAB: map['isQAB'] ?? false,
+      gameLabel: map['gameLabel'] ?? '',
+      abNumber: map['abNumber'] ?? 0,
+      season: map['season'] ?? '',
+      pitches: (map['pitches'] as List<dynamic>?)
+              ?.map((p) => Pitch.fromMap(p as Map<String, dynamic>))
+              .toList() ?? [],
+    );
+  }
 
-  static AtBatLog fromJson(Map<String, dynamic> json) => AtBatLog(
-    pitcher: json['pitcher'] ?? '',
-    team: json['team'] ?? '',
-    date: json['date'] ?? '',
-    hand: json['hand'] ?? '',
-    velocity: json['velocity'] ?? '',
-    result: json['result'] ?? '',
-    swingThought: json['swingThought'] ?? '',
-    notes: json['notes'] ?? '',
-    isQAB: json['isQAB'] ?? false,
-    pitches: (json['pitches'] as List? ?? []).map((p) => Pitch.fromJson(p)).toList(),
-    gameLabel: json['gameLabel'] ?? '', // ADD THIS
-    abNumber: json['abNumber'] ?? 1,    // ADD THIS
-    season: json['season'] ?? 'SPRING 2026',
-  );
-}
+  Map<String, dynamic> toMap() {
+    return {
+      'pitcher': pitcher,
+      'team': team,
+      'date': date,
+      'hand': hand,
+      'velocity': velocity,
+      'result': result,
+      'swingThought': swingThought,
+      'notes': notes,
+      'isQAB': isQAB,
+      'gameLabel': gameLabel,
+      'abNumber': abNumber,
+      'season': season,
+      'pitches': pitches.map((p) => p.toMap()).toList(),
+    };
+  }
+} // <--- THIS IS THE ONLY ENDING BRACKET YOU NEED
 
 // =============================================================================
 // SPLASH SCREEN
@@ -225,17 +260,18 @@ class _SplashScreenState extends State<SplashScreen> {
   bool _showMenu = false;
 
   @override
-  void initState() {
-    super.initState();
-    // Wait 3 seconds, then flip the switch to show the Menu
-    Timer(const Duration(seconds: 3), () {
-      if (mounted) {
-        setState(() {
-          _showMenu = true;
-        });
-      }
-    });
-  }
+void initState() {
+  super.initState();
+  // Just show the logo for 3 seconds, then reveal the main screen
+  Timer(const Duration(seconds: 3), () {
+    if (mounted) {
+      setState(() {
+        _showMenu = true; 
+      });
+    }
+  });
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -411,7 +447,7 @@ class HitterLogScreen extends StatefulWidget {
 // 3. THE SCREEN STATE (Where the logic lives)
 class _HitterLogScreenState extends State<HitterLogScreen> {
   // YOUR VARIABLES START HERE
-  final List<AtBatLog> _allLogs = [];
+  List<AtBatLog> _allLogs = [];
   // --- ADD THESE SEASON VARIABLES ---
   List<String> _seasons = ['SPRING 2026']; // Initial default season
   String _activeSeason = 'SPRING 2026';    // The currently selected season
@@ -444,22 +480,37 @@ class _HitterLogScreenState extends State<HitterLogScreen> {
   }
   
   
-  // YOUR FUNCTIONS (Save/Load)
-  Future<void> _saveLogs() async {
-    final prefs = await SharedPreferences.getInstance();
-    final String encodedData = jsonEncode(_allLogs.map((log) => log.toJson()).toList());
-    await prefs.setString('all_at_bats', encodedData);
+  // 1. SAVE: Now sends directly to your CloudService
+  Future<void> _saveLogs(AtBatLog newLog) async {
+    try {
+      await CloudService().logAtBat(newLog.toMap());
+      
+      // Update the local list so the UI refreshes instantly
+      setState(() {
+        _allLogs.insert(0, newLog);
+      });
+    } catch (e) {
+      print("Error saving log: $e");
+    }
   }
 
+  // 2. LOAD: Pure Cloud loading (Ensures you only see YOUR data)
   Future<void> _loadLogs() async {
-    final prefs = await SharedPreferences.getInstance();
-    final String? savedData = prefs.getString('all_at_bats');
-    if (savedData != null) {
-      final List decoded = jsonDecode(savedData);
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    try {
+      // Use the getter we added to CloudService
+      final List<Map<String, dynamic>> cloudData = await CloudService().getAtBatLogs(user.uid);
+      
       setState(() {
-        _allLogs.clear();
-        _allLogs.addAll(decoded.map((item) => AtBatLog.fromJson(item)).toList());
+        // This uses the fromMap logic we just added to your AtBatLog class
+        _allLogs = cloudData.map((data) => AtBatLog.fromMap(data)).toList();
       });
+      
+      print("DEBUG: Cloud found ${_allLogs.length} logs for user ${user.uid}");
+    } catch (e) {
+      print("Error loading logs: $e");
     }
   }
 
@@ -468,34 +519,57 @@ class _HitterLogScreenState extends State<HitterLogScreen> {
   final TextEditingController _nameController = TextEditingController();
 
   @override
-  void initState() {
-    super.initState();
-    _loadLogs();
-    _loadUserName();
-    _loadSeasons(); // ADD THIS LINE
+void initState() {
+  super.initState();
+  
+  // Get the current user from Firebase
+  final user = FirebaseAuth.instance.currentUser;
+  
+  if (user != null) {
+    // Pass the user's ID to the loaders
+    _loadUserName(user.uid);
+    _loadSeasons(user.uid);
+    _loadLogs(); 
+  }
+}
+
+// LOAD NAME FROM CLOUD
+Future<void> _loadUserName(String uid) async {
+  // 1. Ask the Cloud for the name tied to this specific UID
+  String? cloudName = await CloudService().getUserName(uid);
+  
+  if (mounted) {
+    setState(() {
+      // 2. Update the UI with the cloud name
+      _userName = cloudName ?? "";
+    });
   }
 
-  // LOAD NAME FROM MEMORY
-  Future<void> _loadUserName() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _userName = prefs.getString('user_name') ?? "";
-    });
-    
-    // If no name is found, ask for it immediately
-    if (_userName.isEmpty) {
-      WidgetsBinding.instance.addPostFrameCallback((_) => _showNameDialog());
-    }
+  // 3. If no name exists in the cloud yet, pop up the entry dialog
+  if (_userName.isEmpty) {
+    WidgetsBinding.instance.addPostFrameCallback((_) => _showNameDialog());
   }
+}
+    
 
   // SAVE NAME TO MEMORY
   Future<void> _saveUserName(String name) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('user_name', name);
+  final user = FirebaseAuth.instance.currentUser;
+  
+  if (user != null) {
+    // 1. Send the name to the Cloud (Tied to your specific Login ID)
+    await CloudService().saveUserProfile(user.uid, name);
+    
+    // 2. Update the screen immediately
     setState(() {
       _userName = name;
     });
+
+    // 3. Optional: Backup to local memory for faster loading
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('user_name', name);
   }
+}
   // SAVE SEASONS TO MEMORY
   Future<void> _saveSeasons() async {
     final prefs = await SharedPreferences.getInstance();
@@ -504,7 +578,7 @@ class _HitterLogScreenState extends State<HitterLogScreen> {
   }
 
   // LOAD SEASONS FROM MEMORY
-  Future<void> _loadSeasons() async {
+  Future<void> _loadSeasons(String uid) async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       _seasons = prefs.getStringList('user_seasons') ?? ['SPRING 2026'];
@@ -552,14 +626,31 @@ class _HitterLogScreenState extends State<HitterLogScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   ..._seasons.map((s) => ListTile(
-                        title: Text(s, style: TextStyle(color: s == _activeSeason ? const Color(0xFFD4AF37) : Colors.white)),
-                        trailing: s == _activeSeason ? const Icon(Icons.check, color: Color(0xFFD4AF37)) : null,
-                        onTap: () {
-                          setState(() => _activeSeason = s);
-                          _saveSeasons();
-                          Navigator.pop(context);
-                        },
-                      )),
+                    title: Text(s, style: TextStyle(
+                      color: s == _activeSeason ? const Color(0xFFD4AF37) : Colors.white,
+                      fontSize: 14
+                    )),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (s == _activeSeason) 
+                          const Icon(Icons.check, color: Color(0xFFD4AF37), size: 18),
+                        const SizedBox(width: 4),
+                        IconButton(
+                          icon: const Icon(Icons.delete_outline, color: Colors.white24, size: 18),
+                          onPressed: () {
+                            // This opens the confirmation window
+                            _confirmDeleteSeason(context, s, setDialogState);
+                          },
+                        ),
+                      ],
+                    ),
+                    onTap: () {
+                      setState(() => _activeSeason = s);
+                      _saveSeasons();
+                      Navigator.pop(context);
+                    },
+                  )),
                   const Divider(color: Colors.white24),
                   TextButton.icon(
                     icon: const Icon(Icons.add, size: 18, color: Color(0xFFD4AF37)),
@@ -573,6 +664,7 @@ class _HitterLogScreenState extends State<HitterLogScreen> {
                         });
                         setState(() {}); 
                         _saveSeasons();
+                        Navigator.pop(context);
                       }
                     },
                   ),
@@ -585,7 +677,38 @@ class _HitterLogScreenState extends State<HitterLogScreen> {
     },
   );
 }
-
+void _confirmDeleteSeason(BuildContext context, String seasonName, StateSetter setDialogState) {
+  showDialog(
+    context: context,
+    builder: (innerContext) => AlertDialog(
+      backgroundColor: const Color(0xFF1A1D21),
+      title: const Text("DELETE SEASON?", style: TextStyle(color: Colors.redAccent, fontSize: 16)),
+      content: Text("Delete '$seasonName'? Data stays in the cloud, but the label will be removed."),
+      actions: [
+        TextButton(
+          child: const Text("CANCEL", style: TextStyle(color: Colors.white)),
+          onPressed: () => Navigator.pop(innerContext),
+        ),
+        TextButton(
+          child: const Text("DELETE", style: TextStyle(color: Colors.redAccent)),
+          onPressed: () {
+            setDialogState(() {
+              _seasons.remove(seasonName);
+            });
+            if (_activeSeason == seasonName) {
+              setState(() {
+                _activeSeason = _seasons.isNotEmpty ? _seasons[0] : "SPRING 2026";
+              });
+            }
+            _saveSeasons();
+            setState(() {}); 
+            Navigator.pop(innerContext); // Closes this confirm box
+          },
+        ),
+      ],
+    ),
+  );
+}
   // POPUP DIALOG TO ASK FOR NAME
   void _showNameDialog() {
     showDialog(
@@ -646,22 +769,26 @@ class _HitterLogScreenState extends State<HitterLogScreen> {
     );
   }
   
-  final TextEditingController _searchController = TextEditingController();
-  
+  TextEditingController _searchController = TextEditingController();
+
   String _selectedHandFilter = "All";
   String _selectedPitchFilter = "All";
-  
+
   String _chaseHandFilter = "All";
-  String _chasePitchFilter = "All"; 
-  
+  String _chasePitchFilter = "All";
+
   String _firstHandFilter = "All";
-  String _firstPitchFilter = "All"; 
-  
-  bool _resultPitchOnly = true; 
+  String _firstPitchFilter = "All";
+
+  bool _resultPitchOnly = true;
 
   final Map<String, Color> _pData = {
-    "Fastball": Colors.red, "Slider": Colors.blue, "Curveball": Colors.cyan, 
-    "Changeup": Colors.green, "Cutter": Colors.orange, "Other": Colors.purple
+    "Fastball": Colors.red,
+    "Slider": Colors.blue,
+    "Curveball": Colors.cyan,
+    "Changeup": Colors.green,
+    "Cutter": Colors.orange,
+    "Other": Colors.purple
   };
 
   String _calculateAVG(List<AtBatLog> logs) {
@@ -706,7 +833,7 @@ class _HitterLogScreenState extends State<HitterLogScreen> {
   double _calculateChaseRate(List<AtBatLog> logs, {String pitchType = "All", String hand = "All"}) {
     int oZonePitches = 0;
     int oZoneSwings = 0;
-    
+
     List<AtBatLog> filteredLogs = logs.where((l) {
       if (hand == "All") return true;
       return l.hand == (hand == "RHP" ? "R" : "L");
@@ -741,7 +868,7 @@ class _HitterLogScreenState extends State<HitterLogScreen> {
       if (log.pitches.isNotEmpty) {
         var p = log.pitches[0];
         if (pitchType != "All" && p.type != pitchType) continue;
-        
+
         totalFirstPitches++;
         bool isContact = (log.pitches.length == 1) && !["BB", "HBP", "K"].contains(log.result);
         if (p.isFoul || p.isMiss || isContact) firstPitchSwings++;
@@ -750,8 +877,11 @@ class _HitterLogScreenState extends State<HitterLogScreen> {
     return totalFirstPitches == 0 ? 0.0 : (firstPitchSwings / totalFirstPitches) * 100;
   }
 
-  @override
+ @override
   Widget build(BuildContext context) {
+    // 1. ADD THIS LINE HERE: This filters your data once for the whole screen
+    final seasonalLogs = _allLogs.where((l) => l.season == _activeSeason).toList();
+
     return DefaultTabController(
       length: 6,
       child: Scaffold(
@@ -760,7 +890,6 @@ class _HitterLogScreenState extends State<HitterLogScreen> {
             _userName == "PLAYER" ? "YOUR LEDGER" : "${_userName}'S LEDGER",
             style: const TextStyle(fontSize: 14), 
           ),
-          // --- PASTE THIS SECTION ---
           actions: [
             Padding(
               padding: const EdgeInsets.only(right: 8.0),
@@ -775,11 +904,10 @@ class _HitterLogScreenState extends State<HitterLogScreen> {
                     fontWeight: FontWeight.bold
                   ),
                 ),
-           onPressed: () => _showSeasonPicker(context),
+                onPressed: () => _showSeasonPicker(context),
               ),
             ),
           ],
-          // ---------------------------
           bottom: const TabBar(
             isScrollable: true,
             indicatorColor: Color(0xFFD4AF37),
@@ -796,35 +924,52 @@ class _HitterLogScreenState extends State<HitterLogScreen> {
         body: TabBarView(
           physics: const NeverScrollableScrollPhysics(),
           children: [
-            _buildHistoryTab(),
-            _buildSeasonStatsTab(),
-            _buildHeatMapTab(),
-            _buildStatPage("QAB %", (logs) => logs.isEmpty ? 0 : (logs.where((l) => l.isQAB).length / logs.length) * 100, Colors.greenAccent, "qab"),
-            _buildStatPage("CHASE RATE", (logs) => _calculateChaseRate(logs, pitchType: _chasePitchFilter, hand: _chaseHandFilter), Colors.redAccent, "chase"),
-            _buildStatPage("1ST PITCH SWING", (logs) => _calculateFirstPitchSwing(logs, pitchType: _firstPitchFilter, hand: _firstHandFilter), Colors.blueAccent, "first"),
+            _buildHistoryTab(seasonalLogs),
+            _buildSeasonStatsTab(seasonalLogs),
+            _buildHeatMapTab(seasonalLogs),
+            _buildStatPage("QAB %", (unused) => seasonalLogs.isEmpty ? 0 : (seasonalLogs.where((l) => l.isQAB).length / seasonalLogs.length) * 100, Colors.greenAccent, "qab"),
+            _buildStatPage("CHASE RATE", (unused) => _calculateChaseRate(seasonalLogs, pitchType: _chasePitchFilter, hand: _chaseHandFilter), Colors.redAccent, "chase"),
+            _buildStatPage("1ST PITCH SWING", (unused) => _calculateFirstPitchSwing(seasonalLogs, pitchType: _firstPitchFilter, hand: _firstHandFilter), Colors.blueAccent, "first"),
           ],
         ),
         floatingActionButton: FloatingActionButton(
           backgroundColor: const Color(0xFFD4AF37),
-     onPressed: () async {
-            final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => EntryForm(pData: _pData)));
-            if (result != null && result is AtBatLog) setState(() => _allLogs.insert(0, result));
-            _saveLogs();
-          },
           child: const Icon(Icons.add, color: Colors.black),
-        ),
+          onPressed: () async {
+  final result = await Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => EntryForm(
+        pData: _pData, 
+        activeSeason: _activeSeason, // <-- Pass the current season here
       ),
-    );
-  }
+    ),
+  );
 
-Widget _buildHistoryTab() {
+            if (result != null && result is AtBatLog) {
+              // --- ADD THIS LINE HERE ---
+              
+              // --------------------------
+
+              setState(() {
+                _allLogs.insert(0, result);
+              });
+              await CloudService().logAtBat(result.toMap()); 
+            }
+          },
+        ),
+      ), // This closes Scaffold
+    ); // This closes DefaultTabController
+  } // This closes the Widget build(BuildContext context) function
+
+  // --- EVERYTHING BELOW THIS IS A SEPARATE FUNCTION IN THE CLASS ---
+
+  Widget _buildHistoryTab(List<AtBatLog> seasonalResults) {
     final query = _searchController.text.trim().toLowerCase();
 
-    // 1. FIRST: Filter all logs by the Active Season selected in the top bar
-    List<AtBatLog> seasonalResults = _allLogs.where((l) => l.season == _activeSeason).toList();
-
-    // 2. SECOND: Filter those seasonal results by the search query
-    List<AtBatLog> results = seasonalResults.where((l) {
+    // Note: We already passed in 'seasonalResults' from above, 
+    // but if you want to re-filter within this tab, keep this:
+    List<AtBatLog> filteredResults = seasonalResults.where((l) {
       if (query.isEmpty) return true;
       final searchLower = query.toLowerCase();
       return l.pitcher.toLowerCase().contains(searchLower) ||
@@ -865,8 +1010,8 @@ Widget _buildHistoryTab() {
           : ListView(
               physics: const ClampingScrollPhysics(),
               children: [
-              if (query.isNotEmpty && results.isNotEmpty) _buildScoutingReport(query, results),
-              ...results.map((log) => _buildHistoryCard(log)).toList(),
+              if (query.isNotEmpty && filteredResults.isNotEmpty) _buildScoutingReport(query, filteredResults),
+              ...filteredResults.map((log) => _buildHistoryCard(log)).toList(),
               const SizedBox(height: 100),
             ]),
       ),
@@ -1065,7 +1210,7 @@ Widget _buildHistoryCard(AtBatLog log) {
     ),
   );
 }
-  Widget _buildSeasonStatsTab() {
+  Widget _buildSeasonStatsTab(List<AtBatLog> logs) {
   // 1. Create a filtered list for the active season
   final seasonalLogs = _allLogs.where((l) => l.season == _activeSeason).toList();
 
@@ -1098,7 +1243,7 @@ Widget _buildHistoryCard(AtBatLog log) {
 
   Widget _buildStatRow(String l, String v) => Padding(padding: const EdgeInsets.symmetric(vertical: 12), child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text(l, style: const TextStyle(fontSize: 13, color: Colors.white54, fontWeight: FontWeight.bold)), Text(v, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w900))]));
 
-  Widget _buildHeatMapTab() {
+  Widget _buildHeatMapTab(List<AtBatLog> logs) {
     List<AtBatLog> filtered = _allLogs.where((l) => l.season == _activeSeason && (_selectedHandFilter == "All" || l.hand == (_selectedHandFilter == "RHP" ? "R" : "L"))).toList();
     return SingleChildScrollView(
       physics: const ClampingScrollPhysics(),
@@ -1310,7 +1455,8 @@ class SeasonHeatPainter extends CustomPainter {
 
 class EntryForm extends StatefulWidget {
   final Map<String, Color> pData;
-  const EntryForm({super.key, required this.pData});
+  final String activeSeason;
+  const EntryForm({super.key, required this.pData, required this.activeSeason});
   @override State<EntryForm> createState() => _EntryFormState();
 }
 
@@ -1463,7 +1609,42 @@ class _EntryFormState extends State<EntryForm> {
         const SizedBox(height: 12),
         TextField(controller: _notes, decoration: const InputDecoration(labelText: "NOTES")),
         const SizedBox(height: 32),
-        SizedBox(width: double.infinity, height: 55, child: ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFD4AF37), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))), onPressed: () => Navigator.pop(context, AtBatLog(pitcher: _pitcher.text, team: _team.text, hand: _hand, velocity: _velo.text, result: _res, pitches: List.from(_sequence), notes: _notes.text, date: _date.text, gameLabel: "", abNumber: _selectedAB, isQAB: _qab, swingThought: _swingThought.text, season: "")), child: const Text("SAVE TO LEDGER", style: TextStyle(color: Colors.black, fontWeight: FontWeight.w900, letterSpacing: 1.5)))),
+       SizedBox(
+  width: double.infinity, 
+  height: 55, 
+  child: ElevatedButton(
+    style: ElevatedButton.styleFrom(
+      backgroundColor: const Color(0xFFD4AF37), 
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    ), 
+    onPressed: () => Navigator.pop(
+      context, 
+      AtBatLog(
+        pitcher: _pitcher.text, 
+        team: _team.text, 
+        hand: _hand, 
+        velocity: _velo.text, 
+        result: _res, 
+        pitches: List.from(_sequence), 
+        notes: _notes.text, 
+        date: _date.text, 
+        gameLabel: "", 
+        abNumber: _selectedAB, 
+        isQAB: _qab, 
+        swingThought: _swingThought.text, 
+        season: widget.activeSeason, // This is the fix!
+      ),
+    ), 
+    child: const Text(
+      "SAVE TO LEDGER", 
+      style: TextStyle(
+        color: Colors.black, 
+        fontWeight: FontWeight.w900, 
+        letterSpacing: 1.5,
+      ),
+    ),
+  ),
+),
         const SizedBox(height: 40),
       ])),
     );
