@@ -1,1 +1,0 @@
- /workspaces/TheHittersLedger/build/web/apple-touch-icon.png /workspaces/TheHittersLedger/build/web/manifest.json:  /workspaces/TheHittersLedger/web/index.html /workspaces/TheHittersLedger/web/apple-touch-icon.png /workspaces/TheHittersLedger/web/manifest.json

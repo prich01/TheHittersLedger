@@ -61,4 +61,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'the-hitters-ledger.firebasestorage.app',
     measurementId: 'G-PCNNKNH1HF',
   );
+
 }

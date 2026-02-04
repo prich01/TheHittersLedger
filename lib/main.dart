@@ -1,3 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart'; // Add this for User objects
+import 'auth_screen.dart';
+import 'services/cloud_service.dart';           // Add this to link your new file
 import 'dart:convert';
 import 'dart:async';
 import 'dart:ui' as ui;           // Required for image processing
@@ -17,19 +20,7 @@ import 'firebase_options.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
-  // 1. Launch the UI immediately (no white screen!)
   runApp(const HittersLedgerApp());
-
-  // 2. Try to connect to the database quietly in the background
-  try {
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
-    print("⚾ CLOUD STATUS: Firebase is connected and ready!");
-  } catch (e) {
-    print("❌ CLOUD STATUS: Connection failed, but the app is still running. Error: $e");
-  }
 }
 
 class HittersLedgerApp extends StatelessWidget {
@@ -44,42 +35,26 @@ class HittersLedgerApp extends StatelessWidget {
         brightness: Brightness.dark,
         primaryColor: const Color(0xFFD4AF37),
         scaffoldBackgroundColor: const Color(0xFF0F1113),
-        // FIXED: Changed CardThemeData to CardTheme
-        cardTheme: CardThemeData(
-          color: const Color(0xFF1A1D21),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          elevation: 0,
-        ),
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          centerTitle: true,
-          titleTextStyle: TextStyle(
-            color: Color(0xFFD4AF37),
-            fontWeight: FontWeight.w900,
-            letterSpacing: 2.0,
-            fontSize: 18,
-          ),
-        ),
-        inputDecorationTheme: InputDecorationTheme(
-          filled: true,
-          fillColor: const Color(0xFF1A1D21),
-          labelStyle: const TextStyle(color: Colors.white54, fontSize: 13),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide.none),
-          enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: Colors.white10)),
-          focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: Color(0xFFD4AF37))),
-        ),
-        // FIXED: Changed TabBarThemeData to TabBarTheme
-        tabBarTheme: const TabBarThemeData(
-          labelColor: Color(0xFFD4AF37),
-          unselectedLabelColor: Colors.white38,
-          indicatorSize: TabBarIndicatorSize.label,
-        ),
+        // Add any other theme data you already had here
       ),
-    home: const SplashScreen(),
+      // This is the "Engine Room" that waits for the cloud to connect
+      home: FutureBuilder(
+        future: Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            return const RootWrapper();
+          }
+          // While Firebase is initializing, show a black screen with a gold spinner
+          return const Scaffold(
+            backgroundColor: Color(0xFF0F1113),
+            body: Center(child: CircularProgressIndicator(color: Color(0xFFD4AF37))),
+          );
+        },
+      ),
     );
   }
 }
+
 
 class StadiumLightingPainter extends CustomPainter {
   @override
@@ -247,45 +222,55 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  bool _showMenu = false;
+
   @override
   void initState() {
     super.initState();
-    // This timer tells the app to wait 3 seconds, then move to the Home screen
+    // Wait 3 seconds, then flip the switch to show the Menu
     Timer(const Duration(seconds: 3), () {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
-      );
+      if (mounted) {
+        setState(() {
+          _showMenu = true;
+        });
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      // We use a Stack to layer the logo ON TOP of the background
-      body: Stack(
-        children: [
-          // 1. The Background Layer (Fills the entire screen)
-          Positioned.fill(
-            child: Image.asset(
-              'assets/stadium_bg.png', 
-              fit: BoxFit.cover, // This stretches/crops to ensure no black bars
+    // 1. If timer isn't done, show the Logo + Stadium Background
+    if (!_showMenu) {
+      return Scaffold(
+        body: Stack(
+          children: [
+            // Background Layer
+            Positioned.fill(
+              child: Image.asset(
+                'assets/stadium_bg.png', 
+                fit: BoxFit.cover,
+              ),
             ),
-          ),
-          
-          // 2. The Logo Layer (Stays centered and proportional)
-          Center(
-            child: Image.asset(
-              'assets/hl_logo.png',
-              width: 280, // Adjusted slightly larger for impact
-              fit: BoxFit.contain,
+            // Logo Layer
+            Center(
+              child: Image.asset(
+                'assets/hl_logo.png',
+                width: 280,
+                fit: BoxFit.contain,
+              ),
             ),
-          ),
-        ],
-      ),
-    );
+          ],
+        ),
+      );
+    }
+
+    // 2. If timer IS done, show the HomeScreen (which has the logout button)
+    return const HomeScreen(); 
   }
 }
+
+  
+
 // =============================================================================
 // HOME SCREEN
 // =============================================================================
@@ -298,6 +283,16 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text("THE HITTER'S LEDGER"),
+        // --- PASTE START ---
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout, color: Colors.redAccent),
+            onPressed: () async {
+              await CloudService().signOut();
+            },
+          ),
+        ],
+        // --- PASTE END ---
       ),
       
       body: Stack(
@@ -2160,6 +2155,32 @@ class _CageRoutinesScreenState extends State<CageRoutinesScreen> {
           ),
         ],
       ),
+    );
+  }
+}
+class RootWrapper extends StatelessWidget {
+  const RootWrapper({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    // We use <User?> to tell the stream what kind of data to expect
+    return StreamBuilder<User?>(
+      stream: CloudService().userStream,
+      builder: (context, snapshot) {
+        // 1. Show a loader while checking login status
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(body: Center(child: CircularProgressIndicator()));
+        }
+
+        // 2. If the user is logged in, show the Splash Screen
+        if (snapshot.hasData && snapshot.data != null) {
+          return const SplashScreen(); 
+        }
+
+        // 3. If no user is logged in, show the Auth Screen
+        // REMOVE 'const' here because AuthScreen has dynamic controllers
+        return AuthScreen(); 
+      },
     );
   }
 }

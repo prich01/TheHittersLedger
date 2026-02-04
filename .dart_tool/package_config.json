@@ -207,7 +207,7 @@
     },
     {
       "name": "flutter",
-      "rootUri": "file:///workspaces/TheHittersLedger/flutter/packages/flutter",
+      "rootUri": "file:///home/codespace/flutter-sdk/packages/flutter",
       "packageUri": "lib/",
       "languageVersion": "3.8"
     },
@@ -231,13 +231,13 @@
     },
     {
       "name": "flutter_test",
-      "rootUri": "file:///workspaces/TheHittersLedger/flutter/packages/flutter_test",
+      "rootUri": "file:///home/codespace/flutter-sdk/packages/flutter_test",
       "packageUri": "lib/",
       "languageVersion": "3.8"
     },
     {
       "name": "flutter_web_plugins",
-      "rootUri": "file:///workspaces/TheHittersLedger/flutter/packages/flutter_web_plugins",
+      "rootUri": "file:///home/codespace/flutter-sdk/packages/flutter_web_plugins",
       "packageUri": "lib/",
       "languageVersion": "3.8"
     },
@@ -489,7 +489,7 @@
     },
     {
       "name": "sky_engine",
-      "rootUri": "file:///workspaces/TheHittersLedger/flutter/bin/cache/pkg/sky_engine",
+      "rootUri": "file:///home/codespace/flutter-sdk/bin/cache/pkg/sky_engine",
       "packageUri": "lib/",
       "languageVersion": "3.8"
     },
@@ -628,7 +628,7 @@
   ],
   "generator": "pub",
   "generatorVersion": "3.10.8",
-  "flutterRoot": "file:///workspaces/TheHittersLedger/flutter",
+  "flutterRoot": "file:///home/codespace/flutter-sdk",
   "flutterVersion": "3.38.9",
   "pubCache": "file:///home/codespace/.pub-cache"
 }
