@@ -13,7 +13,7 @@ jobs:
       - run: |
           flutter config --enable-web
           flutter create . --platforms web
-          flutter build web --release --base-href /${{ github.event.repository.name }}/
+          flutter build web --release --base-href "/"
       - name: Upload for Pages
         uses: actions/upload-pages-artifact@v3
         with:
