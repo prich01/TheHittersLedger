@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/cloud_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
@@ -22,6 +23,34 @@ class _AuthScreenState extends State<AuthScreen> {
         behavior: SnackBarBehavior.floating,
       ),
     );
+  }
+
+  void _showSuccess(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.green,
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+
+  Future<void> _handleForgotPassword() async {
+    final email = _emailController.text.trim();
+    if (email.isEmpty) {
+      _showError("Please enter your email to reset password");
+      return;
+    }
+
+    setState(() => _isLoading = true);
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+      _showSuccess("Reset link sent! Check your inbox.");
+    } catch (e) {
+      _showError("Could not send reset link. Check the email address.");
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
   }
 
   Future<void> _handleAuth() async {
@@ -109,7 +138,21 @@ class _AuthScreenState extends State<AuthScreen> {
                   style: const TextStyle(color: Colors.white),
                   decoration: _buildInputDecoration("PASSWORD", Icons.lock_outline),
                 ),
-                const SizedBox(height: 40),
+
+                // Forgot Password - Only shows in Login mode
+                if (_isLogin)
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                      onPressed: _isLoading ? null : _handleForgotPassword,
+                      child: const Text(
+                        "Forgot Password?",
+                        style: TextStyle(color: Colors.white38, fontSize: 12),
+                      ),
+                    ),
+                  ),
+
+                const SizedBox(height: 20),
 
                 // Action Buttons
                 if (_isLoading)
