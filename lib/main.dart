@@ -1496,7 +1496,15 @@ class SeasonHeatPainter extends CustomPainter {
 class EntryForm extends StatefulWidget {
   final Map<String, Color> pData;
   final String activeSeason;
-  const EntryForm({super.key, required this.pData, required this.activeSeason});
+  final int currentLogCount; // The "Scoreboard" for the paywall
+
+  const EntryForm({
+    super.key, 
+    required this.pData, 
+    required this.activeSeason, 
+    required this.currentLogCount, // Required so we can check the limit
+  });
+
   @override State<EntryForm> createState() => _EntryFormState();
 }
 
@@ -1657,24 +1665,36 @@ class _EntryFormState extends State<EntryForm> {
       backgroundColor: const Color(0xFFD4AF37), 
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
     ), 
-    onPressed: () => Navigator.pop(
-      context, 
-      AtBatLog(
-        pitcher: _pitcher.text, 
-        team: _team.text, 
-        hand: _hand, 
-        velocity: _velo.text, 
-        result: _res, 
-        pitches: List.from(_sequence), 
-        notes: _notes.text, 
-        date: _date.text, 
-        gameLabel: "", 
-        abNumber: _selectedAB, 
-        isQAB: _qab, 
-        swingThought: _swingThought.text, 
-        season: widget.activeSeason, // This is the fix!
-      ),
-    ), 
+    onPressed: () {
+      // 1. Check if they've hit the limit
+      if (widget.currentLogCount >= 10) {
+        // 2. Stop the save and show the Paywall
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const PaywallScreen()),
+        );
+      } else {
+        // 3. If under the limit, pop back and save to Firebase as normal
+        Navigator.pop(
+          context, 
+          AtBatLog(
+            pitcher: _pitcher.text, 
+            team: _team.text, 
+            hand: _hand, 
+            velocity: _velo.text, 
+            result: _res, 
+            pitches: List.from(_sequence), 
+            notes: _notes.text, 
+            date: _date.text, 
+            gameLabel: "", 
+            abNumber: _selectedAB, 
+            isQAB: _qab, 
+            swingThought: _swingThought.text, 
+            season: widget.activeSeason,
+          ),
+        );
+      }
+    }, 
     child: const Text(
       "SAVE TO LEDGER", 
       style: TextStyle(
