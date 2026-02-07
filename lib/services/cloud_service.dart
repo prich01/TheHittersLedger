@@ -29,6 +29,7 @@ class CloudService {
         'email': email,
         'atBatCount': 0,
         'accountStatus': 'free',
+        'isPro': false, // <--- ADDED: VIP Badge status
         'createdAt': FieldValue.serverTimestamp(),
         'seasons': ['CURRENT SEASON'], 
       });
@@ -45,11 +46,22 @@ class CloudService {
     final user = _auth.currentUser;
     if (user == null) return;
 
+    final userDocRef = _db.collection('users').doc(user.uid);
+    
+    // Check if user is Pro and check their current count
+    final docSnapshot = await userDocRef.get();
+    int currentCount = docSnapshot.data()?['atBatCount'] ?? 0;
+    bool isPro = docSnapshot.data()?['isPro'] ?? false;
+
+    // GATEKEEPER: Stop user if they hit 10 at-bats and aren't Pro
+    if (currentCount >= 10 && !isPro) {
+      throw Exception('PAYWALL_LOCKED');
+    }
+
     final batch = _db.batch();
-    final userDoc = _db.collection('users').doc(user.uid);
     // Use a specific ID if provided in atBatData, otherwise generate one
     final String logId = atBatData['id'] ?? _db.collection('users').doc().id;
-    final atBatDoc = userDoc.collection('atBats').doc(logId);
+    final atBatDoc = userDocRef.collection('atBats').doc(logId);
 
     batch.set(atBatDoc, {
       ...atBatData,
@@ -57,7 +69,7 @@ class CloudService {
       'timestamp': FieldValue.serverTimestamp(),
     });
 
-    batch.update(userDoc, {
+    batch.update(userDocRef, {
       'atBatCount': FieldValue.increment(1),
     });
 
