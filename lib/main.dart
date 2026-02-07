@@ -1101,7 +1101,7 @@ void _confirmDeleteSeason(BuildContext context, String seasonName, StateSetter s
 Widget _buildHistoryCard(AtBatLog log) {
   // 1. UNIQUE KEY FIX: Now includes abNumber so facing the same pitcher twice works!
   // We use the database ID if it exists, otherwise we create a unique string.
-  final String logId = log.id.isNotEmpty ? log.id : "${log.pitcher}_${log.date}_AB${log.abNumber}"; 
+  final String logId = "${log.pitcher}_${log.date}_AB${log.abNumber}"; 
   _atBatKeys[logId] ??= GlobalKey();
   final GlobalKey cardKey = _atBatKeys[logId]!;
 
