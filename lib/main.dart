@@ -1099,12 +1099,13 @@ void _confirmDeleteSeason(BuildContext context, String seasonName, StateSetter s
   ]);
 
 Widget _buildHistoryCard(AtBatLog log) {
-  // 1. Generate the unique key for this specific log entry
-  final String logId = "${log.pitcher}_${log.date}"; 
+  // 1. UNIQUE KEY FIX: Now includes abNumber so facing the same pitcher twice works!
+  // We use the database ID if it exists, otherwise we create a unique string.
+  final String logId = log.id.isNotEmpty ? log.id : "${log.pitcher}_${log.date}_AB${log.abNumber}"; 
   _atBatKeys[logId] ??= GlobalKey();
   final GlobalKey cardKey = _atBatKeys[logId]!;
 
-  // 2. Updated Legend helper with your specific colors and labels
+  // 2. Legend helper (maintained your specific colors)
   Widget buildInlineLegend() {
     final Map<String, Color> pitchColors = {
       "Fastball": Colors.red, 
@@ -1130,7 +1131,7 @@ Widget _buildHistoryCard(AtBatLog log) {
               ),
               const SizedBox(width: 6),
               Text(
-                entry.key.toUpperCase(), // Makes it look clean like the rest of your UI
+                entry.key.toUpperCase(),
                 style: const TextStyle(color: Colors.white70, fontSize: 9, fontWeight: FontWeight.bold),
               ),
             ],
@@ -1140,23 +1141,42 @@ Widget _buildHistoryCard(AtBatLog log) {
     );
   }
 
-  // 3. Return the RepaintBoundary wrapping the Card
+  // 3. The Visual Card
   return RepaintBoundary(
     key: cardKey,
     child: Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       child: ExpansionTile(
         iconColor: const Color(0xFFD4AF37),
-        title: Text(
-          log.pitcher.toUpperCase(),
-          style: const TextStyle(
-            color: Color(0xFFD4AF37),
-            fontWeight: FontWeight.w900,
-            fontSize: 15,
-          ),
+        title: Row(
+          children: [
+            Expanded(
+              child: Text(
+                log.pitcher.toUpperCase(),
+                style: const TextStyle(
+                  color: Color(0xFFD4AF37),
+                  fontWeight: FontWeight.w900,
+                  fontSize: 15,
+                ),
+              ),
+            ),
+            // GREEN QAB BADGE - Only shows if it was a Quality At-Bat
+            if (log.isQAB)
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                decoration: BoxDecoration(
+                  color: Colors.green.withOpacity(0.8),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: const Text(
+                  "QAB",
+                  style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                ),
+              ),
+          ],
         ),
         subtitle: Text(
-          "${log.result} • ${log.date}",
+          "AB #${log.abNumber} • ${log.result} • ${log.date}", // Added AB# here for clarity
           style: const TextStyle(color: Colors.white38, fontSize: 12),
         ),
         trailing: Row(
@@ -1190,7 +1210,7 @@ Widget _buildHistoryCard(AtBatLog log) {
                 const Divider(height: 24, color: Colors.white10),
                 if (log.swingThought.isNotEmpty) ...[
                   Text(
-                    "THOUGHT: ${log.swingThought}",
+                    "THOUGHT: ${log.swingThought.toUpperCase()}",
                     style: const TextStyle(
                       color: Colors.greenAccent,
                       fontWeight: FontWeight.bold,
