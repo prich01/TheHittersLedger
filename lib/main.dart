@@ -1,3 +1,4 @@
+import 'paywall_screen.dart'; // Add this at the top with your other imports
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart'; // Add this for User objects
 import 'auth_screen.dart';
@@ -480,7 +481,7 @@ class _HitterLogScreenState extends State<HitterLogScreen> {
   }
   
   
-  // 1. SAVE: Now sends directly to your CloudService
+  // 1. SAVE: Now sends directly to your CloudService with Paywall Catch
   Future<void> _saveLogs(AtBatLog newLog) async {
     try {
       await CloudService().logAtBat(newLog.toMap());
@@ -489,8 +490,27 @@ class _HitterLogScreenState extends State<HitterLogScreen> {
       setState(() {
         _allLogs.insert(0, newLog);
       });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('At-Bat Saved!')),
+      );
+
     } catch (e) {
-      print("Error saving log: $e");
+      // Check if the database blocked the save because of the 10-log limit
+      if (e.toString().contains('PAYWALL_LOCKED')) {
+        
+        // This opens your new Paywall Screen
+        Navigator.push(
+          context, 
+          MaterialPageRoute(builder: (context) => const PaywallScreen())
+        );
+
+      } else {
+        // This handles regular errors (like no wifi)
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not save: $e')),
+        );
+      }
     }
   }
 
