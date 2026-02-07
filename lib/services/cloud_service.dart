@@ -30,7 +30,7 @@ class CloudService {
         'atBatCount': 0,
         'accountStatus': 'free',
         'createdAt': FieldValue.serverTimestamp(),
-        'seasons': ['SPRING 2026'], 
+        'seasons': ['CURRENT SEASON'], 
       });
     }
     return credential;

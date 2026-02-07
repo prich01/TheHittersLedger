@@ -449,8 +449,8 @@ class _HitterLogScreenState extends State<HitterLogScreen> {
   // YOUR VARIABLES START HERE
   List<AtBatLog> _allLogs = [];
   // --- ADD THESE SEASON VARIABLES ---
-  List<String> _seasons = ['SPRING 2026']; // Initial default season
-  String _activeSeason = 'SPRING 2026';    // The currently selected season
+  List<String> _seasons = ['CURRENT SEASON']; // Initial default season
+  String _activeSeason = 'CURRENT SEASON';    // The currently selected season
   // ----------------------------------
   // ADD THIS: A map to hold the keys for each card
   final Map<String, GlobalKey> _atBatKeys = {};
@@ -581,7 +581,7 @@ Future<void> _loadUserName(String uid) async {
   Future<void> _loadSeasons(String uid) async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      _seasons = prefs.getStringList('user_seasons') ?? ['SPRING 2026'];
+      _seasons = prefs.getStringList('user_seasons') ?? ['CURRENT SEASON'];
       _activeSeason = prefs.getString('active_season') ?? _seasons.first;
     });
   }
@@ -697,7 +697,7 @@ void _confirmDeleteSeason(BuildContext context, String seasonName, StateSetter s
             });
             if (_activeSeason == seasonName) {
               setState(() {
-                _activeSeason = _seasons.isNotEmpty ? _seasons[0] : "SPRING 2026";
+                _activeSeason = _seasons.isNotEmpty ? _seasons[0] : "CURRENT SEASON";
               });
             }
             _saveSeasons();
