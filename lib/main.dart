@@ -960,9 +960,10 @@ void _confirmDeleteSeason(BuildContext context, String seasonName, StateSetter s
     context,
     MaterialPageRoute(
       builder: (context) => EntryForm(
-        pData: _pData, 
-        activeSeason: _activeSeason, // <-- Pass the current season here
-      ),
+  pData: _pData, 
+  activeSeason: _activeSeason,
+  currentLogCount: _allLogs.length, // Add this line!
+),
     ),
   );
 
