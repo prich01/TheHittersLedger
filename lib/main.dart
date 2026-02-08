@@ -23,21 +23,22 @@ import 'auth_screen.dart';
 import 'services/cloud_service.dart';
 
 Future<void> main() async {
+  // 1. WE GRAB THE URL IMMEDIATELY - THIS IS THE FIX
+  // We do this before the app even "initializes" its own routing
+  final String immediateUrl = html.window.location.href;
+  print("DEBUG 0: Immediate URL Capture: $immediateUrl");
+
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-
-  // 1. Capture the URL immediately
-  final String cachedUrl = html.window.location.href;
-  print("DEBUG 1: App Started. URL is: $cachedUrl");
 
   // 2. LISTEN for the user.
   FirebaseAuth.instance.authStateChanges().listen((user) async {
     if (user != null) {
       print("DEBUG 2: User recognized: ${user.uid}");
 
-      // We check for 'success' here, after we are SURE we have a user
-      if (cachedUrl.contains('success')) {
-        print("DEBUG 3: Success detected in URL! Updating Firestore...");
+      // Now we use the 'immediateUrl' we grabbed at DEBUG 0
+      if (immediateUrl.contains('success')) {
+        print("DEBUG 3: Success detected in captured URL! Updating Firestore...");
         
         try {
           await FirebaseFirestore.instance
@@ -51,10 +52,8 @@ Future<void> main() async {
           print("DEBUG ERROR: Firestore failed: $e ❌");
         }
       } else {
-        print("DEBUG 3: No 'success' found in URL.");
+        print("DEBUG 3: No 'success' found in immediate capture. URL was: $immediateUrl");
       }
-    } else {
-      print("DEBUG 2: No user detected yet. Waiting...");
     }
   });
 
