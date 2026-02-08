@@ -26,30 +26,38 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  // 1. Capture the URL IMMEDIATELY
+  // 1. Capture the URL immediately
   final String cachedUrl = html.window.location.href;
+  print("DEBUG 1: App Started. URL is: $cachedUrl");
 
-  // 2. Wait for Firebase Auth to find the user session
+  // 2. LISTEN for the user.
   FirebaseAuth.instance.authStateChanges().listen((user) async {
-    if (user != null && cachedUrl.contains('success')) {
-      try {
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(user.uid)
-            .set({'isPro': true}, SetOptions(merge: true));
-        
-        print("✅ PRO STATUS SAVED");
+    if (user != null) {
+      print("DEBUG 2: User recognized: ${user.uid}");
 
-        // The "Sticky Note": Tells the Home Screen to show the popup
-        html.window.localStorage['showSuccessPopup'] = 'true';
+      // We check for 'success' here, after we are SURE we have a user
+      if (cachedUrl.contains('success')) {
+        print("DEBUG 3: Success detected in URL! Updating Firestore...");
         
-      } catch (e) {
-        print("❌ DATABASE ERROR: $e");
+        try {
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(user.uid)
+              .set({'isPro': true}, SetOptions(merge: true));
+          
+          html.window.localStorage['showSuccessPopup'] = 'true';
+          print("DEBUG 4: Database updated and Sticky Note saved. ✅");
+        } catch (e) {
+          print("DEBUG ERROR: Firestore failed: $e ❌");
+        }
+      } else {
+        print("DEBUG 3: No 'success' found in URL.");
       }
+    } else {
+      print("DEBUG 2: No user detected yet. Waiting...");
     }
   });
 
-  // 3. Start the UI
   runApp(const HittersLedgerApp());
 }
 
