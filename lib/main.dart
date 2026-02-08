@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+import 'dart:typed_data';
 import 'dart:html' as html;
 import 'dart:convert';
 import 'dart:async';
@@ -614,27 +616,46 @@ class _HitterLogScreenState extends State<HitterLogScreen> {
 
   // ADD THIS: The logic to turn the card into an image
   Future<void> _captureAndShare(GlobalKey key, String pitcherName, String result) async {
-    try {
-      RenderRepaintBoundary? boundary = key.currentContext?.findRenderObject() as RenderRepaintBoundary?;
-      if (boundary == null) return;
+  Uint8List? pngBytes; // Declared outside the try block for safety
+  
+  try {
+    RenderRepaintBoundary? boundary = key.currentContext?.findRenderObject() as RenderRepaintBoundary?;
+    if (boundary == null) return;
 
-      ui.Image image = await boundary.toImage(pixelRatio: 3.0);
-      ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
-      Uint8List pngBytes = byteData!.buffer.asUint8List();
+    ui.Image image = await boundary.toImage(pixelRatio: 3.0);
+    ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+    if (byteData == null) return;
+    
+    pngBytes = byteData.buffer.asUint8List();
 
-      final directory = await getTemporaryDirectory();
-      final String fileName = 'at_bat_${DateTime.now().millisecondsSinceEpoch}.png';
-      final File imageFile = File('${directory.path}/$fileName');
-      await imageFile.writeAsBytes(pngBytes);
+    final xFile = XFile.fromData(
+      pngBytes,
+      mimeType: 'image/png',
+      name: 'at_bat_result.png',
+    );
 
-      await Share.shareXFiles(
-        [XFile(imageFile.path)],
-        text: "At-Bat vs $pitcherName ($result) - Shared from The Hitter's Ledger",
-      );
-    } catch (e) {
-      debugPrint("Error capturing/sharing: $e");
+    await Share.shareXFiles(
+      [xFile],
+      text: "At-Bat vs $pitcherName ($result) - Shared from The Hitter's Ledger",
+    );
+    
+  } catch (e) {
+    debugPrint("Share failed, falling back to download: $e");
+    // If we have data, download it as a fallback
+    if (pngBytes != null) {
+      _downloadImageWeb(pngBytes);
     }
   }
+}
+
+void _downloadImageWeb(Uint8List bytes) {
+  final blob = html.Blob([bytes]);
+  final url = html.Url.createObjectUrlFromBlob(blob);
+  final anchor = html.AnchorElement(href: url)
+    ..setAttribute("download", "at_bat_result.png")
+    ..click();
+  html.Url.revokeObjectUrl(url);
+}
   
   
   // 1. SAVE: Now sends directly to your CloudService with Paywall Catch
