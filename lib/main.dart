@@ -291,30 +291,35 @@ class _SplashScreenState extends State<SplashScreen> {
 void initState() {
   super.initState();
   
-  // 1. Keep your logo timer (same as before)
+  // 1. Keep your logo timer (3 seconds)
   Timer(const Duration(seconds: 3), () {
     if (mounted) {
-      setState(() {
-        _showMenu = true; 
-      });
+      setState(() => _showMenu = true);
     }
   });
 
-  // 2. The NEW Success Check (Looks for the "sticky note" from main)
-  Future.delayed(const Duration(seconds: 1), () {
+  // 2. The "Polished" Success Check
+  // This checks every 1 second to see if main() has finished the database update
+  Timer.periodic(const Duration(seconds: 1), (timer) {
     if (html.window.localStorage['showSuccessPopup'] == 'true') {
-      print("DEBUG: Sticky note found! Triggering celebration...");
+      print("DEBUG: Sticky note found! Clearing and showing popup...");
       
-      // Remove the note so it doesn't pop up again on refresh
+      // Stop the timer so it doesn't keep checking
+      timer.cancel(); 
+      
+      // Clear the note
       html.window.localStorage.remove('showSuccessPopup');
       
-      // Trigger the celebration popup
+      // Show the celebration
       _showSuccessPopup(); 
     }
+    
+    // Safety: If it's been 10 seconds and nothing found, stop checking
+    if (timer.tick > 10) timer.cancel();
   });
 }
 
-// 3. This is your NEW celebration method (Just the UI)
+// 3. Keep your UI method exactly as it was
 void _showSuccessPopup() {
   if (mounted) {
     showDialog(
