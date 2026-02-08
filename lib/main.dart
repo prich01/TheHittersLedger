@@ -1,34 +1,35 @@
 import 'dart:html' as html;
-import 'paywall_screen.dart'; // Add this at the top with your other imports
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart'; // Add this for User objects
-import 'auth_screen.dart';
-import 'services/cloud_service.dart';           // Add this to link your new file
 import 'dart:convert';
 import 'dart:async';
-import 'dart:ui' as ui;           // Required for image processing
-import 'dart:io';               // Required for saving the temporary file
-import 'dart:typed_data';       // Required for handling the image bytes
+import 'dart:ui' as ui;
+import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/rendering.dart'; // Required for the RepaintBoundary logic
+import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:audioplayers/audioplayers.dart';
-import 'package:path_provider/path_provider.dart'; // Required for temporary storage
+import 'package:path_provider/path_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import 'firebase_options.dart';
+import 'paywall_screen.dart';
+import 'auth_screen.dart';
+import 'services/cloud_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  // 1. Capture the URL IMMEDIATELY before the router can change it
+  // 1. Capture the URL IMMEDIATELY
   final String cachedUrl = html.window.location.href;
 
-  // 2. Wait for Firebase to "Wake Up" and find the user
+  // 2. Wait for Firebase Auth to find the user session
   FirebaseAuth.instance.authStateChanges().listen((user) async {
     if (user != null) {
       print("DEBUG: Firebase Auth active for: ${user.uid}");
@@ -49,9 +50,7 @@ Future<void> main() async {
     }
   });
 
-  runApp(const HittersLedgerApp());
-}
-
+  // 3. Start the UI
   runApp(const HittersLedgerApp());
 }
 
@@ -68,11 +67,10 @@ class HittersLedgerApp extends StatelessWidget {
         primaryColor: const Color(0xFFD4AF37),
         scaffoldBackgroundColor: const Color(0xFF0F1113),
       ),
-      // Firebase is now ready before this line even runs!
       home: const RootWrapper(), 
     );
   }
-} // This is the final closing bracket for the class
+}
 
 
 class StadiumLightingPainter extends CustomPainter {
