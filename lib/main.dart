@@ -23,21 +23,34 @@ import 'package:url_launcher/url_launcher.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
-  // Initialize Firebase at the very start
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  // Read the URL before the UI even loads
-  final currentUrl = html.window.location.href;
-  if (currentUrl.contains('success')) {
-    final user = FirebaseAuth.instance.currentUser;
+  // 1. Capture the URL IMMEDIATELY before the router can change it
+  final String cachedUrl = html.window.location.href;
+
+  // 2. Wait for Firebase to "Wake Up" and find the user
+  FirebaseAuth.instance.authStateChanges().listen((user) async {
     if (user != null) {
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid)
-          .set({'isPro': true}, SetOptions(merge: true));
+      print("DEBUG: Firebase Auth active for: ${user.uid}");
+      print("DEBUG: Checking cached URL: $cachedUrl");
+
+      if (cachedUrl.contains('success')) {
+        print("DEBUG: Success found! Updating database...");
+        try {
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(user.uid)
+              .set({'isPro': true}, SetOptions(merge: true));
+          print("✅ PRO STATUS SAVED");
+        } catch (e) {
+          print("❌ DATABASE ERROR: $e");
+        }
+      }
     }
-  }
+  });
+
+  runApp(const HittersLedgerApp());
+}
 
   runApp(const HittersLedgerApp());
 }
