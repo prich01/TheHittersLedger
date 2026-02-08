@@ -31,21 +31,20 @@ Future<void> main() async {
 
   // 2. Wait for Firebase Auth to find the user session
   FirebaseAuth.instance.authStateChanges().listen((user) async {
-    if (user != null) {
-      print("DEBUG: Firebase Auth active for: ${user.uid}");
-      print("DEBUG: Checking cached URL: $cachedUrl");
+    if (user != null && cachedUrl.contains('success')) {
+      try {
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .set({'isPro': true}, SetOptions(merge: true));
+        
+        print("✅ PRO STATUS SAVED");
 
-      if (cachedUrl.contains('success')) {
-        print("DEBUG: Success found! Updating database...");
-        try {
-          await FirebaseFirestore.instance
-              .collection('users')
-              .doc(user.uid)
-              .set({'isPro': true}, SetOptions(merge: true));
-          print("✅ PRO STATUS SAVED");
-        } catch (e) {
-          print("❌ DATABASE ERROR: $e");
-        }
+        // The "Sticky Note": Tells the Home Screen to show the popup
+        html.window.localStorage['showSuccessPopup'] = 'true';
+        
+      } catch (e) {
+        print("❌ DATABASE ERROR: $e");
       }
     }
   });
@@ -279,7 +278,7 @@ class _SplashScreenState extends State<SplashScreen> {
 void initState() {
   super.initState();
   
-  // 1. Keep your logo timer
+  // 1. Keep your logo timer (same as before)
   Timer(const Duration(seconds: 3), () {
     if (mounted) {
       setState(() {
@@ -288,60 +287,45 @@ void initState() {
     }
   });
 
-  // 2. Add the Success Check right here
-  Future.delayed(Duration.zero, () {
-    _checkSuccessPath();
+  // 2. The NEW Success Check (Looks for the "sticky note" from main)
+  Future.delayed(const Duration(seconds: 1), () {
+    if (html.window.localStorage['showSuccessPopup'] == 'true') {
+      print("DEBUG: Sticky note found! Triggering celebration...");
+      
+      // Remove the note so it doesn't pop up again on refresh
+      html.window.localStorage.remove('showSuccessPopup');
+      
+      // Trigger the celebration popup
+      _showSuccessPopup(); 
+    }
   });
 }
 
-// 3. Add this helper method right below the initState block
-void _checkSuccessPath() {
-  // This looks directly at the browser's address bar
-  final fullUrl = html.window.location.href;
-  print("Detected URL: $fullUrl"); 
-
-  if (fullUrl.contains('success')) {
-    print("Success found! Activating Pro...");
-    _activateProStatus();
+// 3. This is your NEW celebration method (Just the UI)
+void _showSuccessPopup() {
+  if (mounted) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF1A1D21),
+        title: const Text("🚀 PRO PASS ACTIVATED", 
+          style: TextStyle(color: Color(0xFFD4AF37), fontWeight: FontWeight.bold)),
+        content: const Text(
+          "Thank you for your purchase! Your account is now upgraded and all features are unlocked.",
+          style: TextStyle(color: Colors.white),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("LET'S GO!", 
+              style: TextStyle(color: Color(0xFFD4AF37))),
+          ),
+        ],
+      ),
+    );
   }
 }
-
-// 4. Add the actual upgrade logic
-void _activateProStatus() async {
-    final user = FirebaseAuth.instance.currentUser;
-    
-    if (user != null) {
-      try {
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(user.uid)
-            .set({'isPro': true}, SetOptions(merge: true));
-        
-        print("✅ SUCCESS: Firestore updated for user: ${user.uid}");
-        
-        if (mounted) {
-          showDialog(
-            context: context,
-            barrierDismissible: false, // Force them to click the button
-            builder: (context) => AlertDialog(
-              title: const Text("🚀 PRO PASS ACTIVATED"),
-              content: const Text("Thank you for your purchase! Your account is now upgraded and all features are unlocked."),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text("LET'S GO!"),
-                ),
-              ],
-            ),
-          );
-        }
-      } catch (e) {
-        print("❌ ERROR updating Firestore: $e");
-      }
-    } else {
-      print("⚠️ No user logged in, cannot activate Pro.");
-    }
-  }
 
 
   @override
