@@ -23,6 +23,22 @@ import 'package:url_launcher/url_launcher.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  // Initialize Firebase at the very start
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  // Read the URL before the UI even loads
+  final currentUrl = html.window.location.href;
+  if (currentUrl.contains('success')) {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .set({'isPro': true}, SetOptions(merge: true));
+    }
+  }
+
   runApp(const HittersLedgerApp());
 }
 
@@ -38,25 +54,12 @@ class HittersLedgerApp extends StatelessWidget {
         brightness: Brightness.dark,
         primaryColor: const Color(0xFFD4AF37),
         scaffoldBackgroundColor: const Color(0xFF0F1113),
-        // Add any other theme data you already had here
       ),
-      // This is the "Engine Room" that waits for the cloud to connect
-      home: FutureBuilder(
-        future: Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            return const RootWrapper();
-          }
-          // While Firebase is initializing, show a black screen with a gold spinner
-          return const Scaffold(
-            backgroundColor: Color(0xFF0F1113),
-            body: Center(child: CircularProgressIndicator(color: Color(0xFFD4AF37))),
-          );
-        },
-      ),
+      // Firebase is now ready before this line even runs!
+      home: const RootWrapper(), 
     );
   }
-}
+} // This is the final closing bracket for the class
 
 
 class StadiumLightingPainter extends CustomPainter {
