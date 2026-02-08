@@ -16,9 +16,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:path_provider/path_provider.dart'; // Required for temporary storage
-import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -308,30 +308,112 @@ void initState() {
 
   
 
-// =============================================================================
-// HOME SCREEN
-// =============================================================================
-
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
- @override
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkPaymentSuccess();
+    });
+  }
+
+  void _checkPaymentSuccess() {
+    if (Uri.base.toString().contains('success')) {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .update({'isPro': true}).then((_) {
+          if (mounted) {
+            _showSuccessDialog();
+          }
+        }).catchError((error) => debugPrint("Update failed: $error"));
+      }
+    }
+  }
+
+  void _showSuccessDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF1A1D21),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Row(
+          children: [
+            Icon(Icons.stars, color: Color(0xFFD4AF37)),
+            SizedBox(width: 10),
+            Text("PRO PASS ACTIVATED", 
+              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
+          ],
+        ),
+        content: const Text(
+          "Welcome to the Big Leagues! Your unlimited access is now active. Let's get to work.",
+          style: TextStyle(color: Colors.white70),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+            },
+            child: const Text("GET STARTED", style: TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("THE HITTER'S LEDGER"),
-        // --- PASTE START ---
         actions: [
+          // StreamBuilder to show the PRO badge in real-time
+          StreamBuilder<DocumentSnapshot>(
+            stream: FirebaseFirestore.instance.collection('users').doc(user?.uid).snapshots(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData && snapshot.data!.exists) {
+                final data = snapshot.data!.data() as Map<String, dynamic>;
+                if (data['isPro'] == true) {
+                  return Container(
+                    margin: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFD4AF37).withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: const Color(0xFFD4AF37), width: 1),
+                    ),
+                    child: const Row(
+                      children: [
+                        Icon(Icons.bolt, size: 14, color: Color(0xFFD4AF37)),
+                        Text("PRO", style: TextStyle(color: Color(0xFFD4AF37), fontWeight: FontWeight.bold, fontSize: 12)),
+                      ],
+                    ),
+                  );
+                }
+              }
+              return const SizedBox.shrink();
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.logout, color: Colors.redAccent),
             onPressed: () async {
-              await CloudService().signOut();
+              await CloudService().signOut(); // RESTORED YOUR CUSTOM SERVICE
             },
           ),
         ],
-        // --- PASTE END ---
       ),
-      
       body: Stack(
         children: [
           Positioned.fill(
@@ -350,23 +432,23 @@ class HomeScreen extends StatelessWidget {
                   "RECORD AT-BATS & SCOUT",
                   Icons.analytics_outlined,
                   const Color(0xFFD4AF37),
-                  () => Navigator.push(context, MaterialPageRoute(builder: (context) =>  HitterLogScreen())),
+                  () => Navigator.push(context, MaterialPageRoute(builder: (context) => HitterLogScreen())),
                 ),
                 const SizedBox(height: 24),
-         Expanded(
-  child: GridView.count(
-    physics: const ClampingScrollPhysics(),
-    crossAxisCount: 2,
-    crossAxisSpacing: 16,
-    mainAxisSpacing: 16,
-   children: [
-      _buildMenuCard(context, "5 TRUTHS", Icons.bolt, Colors.blue, const SimpleTruthsScreen()),
-      _buildMenuCard(context, "IMAGERY", Icons.remove_red_eye_outlined, Colors.purple, const MentalImageryScreen()),
-      _buildMenuCard(context, "SWING THOUGHTS", Icons.psychology_outlined, Colors.green, const SwingThoughtsScreen()),
-      _buildMenuCard(context, "CAGE ROUTINES", Icons.sports_baseball_outlined, Colors.red, const CageRoutinesScreen()),
-    ],
-  ),
-),
+                Expanded(
+                  child: GridView.count(
+                    physics: const ClampingScrollPhysics(),
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 16,
+                    mainAxisSpacing: 16,
+                    children: [
+                      _buildMenuCard(context, "5 TRUTHS", Icons.bolt, Colors.blue, const SimpleTruthsScreen()),
+                      _buildMenuCard(context, "IMAGERY", Icons.remove_red_eye_outlined, Colors.purple, const MentalImageryScreen()),
+                      _buildMenuCard(context, "SWING THOUGHTS", Icons.psychology_outlined, Colors.green, const SwingThoughtsScreen()),
+                      _buildMenuCard(context, "CAGE ROUTINES", Icons.sports_baseball_outlined, Colors.red, const CageRoutinesScreen()),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),
@@ -374,7 +456,8 @@ class HomeScreen extends StatelessWidget {
       ),
     );
   }
-}
+
+  // --- UI HELPER METHODS ---
   Widget _buildHeroCard(BuildContext context, String title, String sub, IconData icon, Color color, VoidCallback onTap) {
     return InkWell(
       onTap: onTap,
@@ -428,6 +511,7 @@ class HomeScreen extends StatelessWidget {
       ),
     );
   }
+}
 
 
 
