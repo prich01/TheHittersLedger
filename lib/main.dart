@@ -1,3 +1,4 @@
+import 'dart:html' as html;
 import 'paywall_screen.dart'; // Add this at the top with your other imports
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart'; // Add this for User objects
@@ -281,39 +282,52 @@ void initState() {
 
 // 3. Add this helper method right below the initState block
 void _checkSuccessPath() {
-  final currentUrl = Uri.base.toString();
-  if (currentUrl.contains('success')) {
+  // This looks directly at the browser's address bar
+  final fullUrl = html.window.location.href;
+  print("Detected URL: $fullUrl"); 
+
+  if (fullUrl.contains('success')) {
+    print("Success found! Activating Pro...");
     _activateProStatus();
   }
 }
 
 // 4. Add the actual upgrade logic
 void _activateProStatus() async {
-  final user = FirebaseAuth.instance.currentUser;
-  if (user != null) {
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(user.uid)
-        .set({'isPro': true}, SetOptions(merge: true));
+    final user = FirebaseAuth.instance.currentUser;
     
-    if (mounted) {
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) => AlertDialog(
-          title: const Text("🚀 PRO PASS ACTIVATED"),
-          content: const Text("Thank you for your purchase! Your account is now upgraded and all features are unlocked."),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text("LET'S GO!"),
+    if (user != null) {
+      try {
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .set({'isPro': true}, SetOptions(merge: true));
+        
+        print("✅ SUCCESS: Firestore updated for user: ${user.uid}");
+        
+        if (mounted) {
+          showDialog(
+            context: context,
+            barrierDismissible: false, // Force them to click the button
+            builder: (context) => AlertDialog(
+              title: const Text("🚀 PRO PASS ACTIVATED"),
+              content: const Text("Thank you for your purchase! Your account is now upgraded and all features are unlocked."),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text("LET'S GO!"),
+                ),
+              ],
             ),
-          ],
-        ),
-      );
+          );
+        }
+      } catch (e) {
+        print("❌ ERROR updating Firestore: $e");
+      }
+    } else {
+      print("⚠️ No user logged in, cannot activate Pro.");
     }
   }
-}
 
 
   @override
