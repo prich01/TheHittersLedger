@@ -263,7 +263,8 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
 void initState() {
   super.initState();
-  // Just show the logo for 3 seconds, then reveal the main screen
+  
+  // 1. Keep your logo timer
   Timer(const Duration(seconds: 3), () {
     if (mounted) {
       setState(() {
@@ -271,6 +272,47 @@ void initState() {
       });
     }
   });
+
+  // 2. Add the Success Check right here
+  Future.delayed(Duration.zero, () {
+    _checkSuccessPath();
+  });
+}
+
+// 3. Add this helper method right below the initState block
+void _checkSuccessPath() {
+  final currentUrl = Uri.base.toString();
+  if (currentUrl.contains('success')) {
+    _activateProStatus();
+  }
+}
+
+// 4. Add the actual upgrade logic
+void _activateProStatus() async {
+  final user = FirebaseAuth.instance.currentUser;
+  if (user != null) {
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .set({'isPro': true}, SetOptions(merge: true));
+    
+    if (mounted) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => AlertDialog(
+          title: const Text("🚀 PRO PASS ACTIVATED"),
+          content: const Text("Thank you for your purchase! Your account is now upgraded and all features are unlocked."),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("LET'S GO!"),
+            ),
+          ],
+        ),
+      );
+    }
+  }
 }
 
 
