@@ -23,37 +23,43 @@ import 'auth_screen.dart';
 import 'services/cloud_service.dart';
 
 Future<void> main() async {
-  // 1. WE GRAB THE URL IMMEDIATELY - THIS IS THE FIX
-  // We do this before the app even "initializes" its own routing
-  final String immediateUrl = html.window.location.href;
-  print("DEBUG 0: Immediate URL Capture: $immediateUrl");
+  // 1. Immediate capture for cold starts
+  String currentUrl = html.window.location.href;
+  print("DEBUG 0: Initial URL: $currentUrl");
 
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  // 2. LISTEN for the user.
-  FirebaseAuth.instance.authStateChanges().listen((user) async {
+  // Function to process the success logic
+  void checkAndProcess(String url, User user) async {
+    if (url.contains('success')) {
+      print("DEBUG 3: Success detected! Updating Firestore...");
+      try {
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .set({'isPro': true}, SetOptions(merge: true));
+        
+        html.window.localStorage['showSuccessPopup'] = 'true';
+        print("DEBUG 4: Success confirmed. ✅");
+      } catch (e) {
+        print("DEBUG ERROR: $e ❌");
+      }
+    }
+  }
+
+  // 2. Listen for Auth changes
+  FirebaseAuth.instance.authStateChanges().listen((user) {
     if (user != null) {
       print("DEBUG 2: User recognized: ${user.uid}");
+      checkAndProcess(currentUrl, user);
 
-      // Now we use the 'immediateUrl' we grabbed at DEBUG 0
-      if (immediateUrl.contains('success')) {
-        print("DEBUG 3: Success detected in captured URL! Updating Firestore...");
-        
-        try {
-          await FirebaseFirestore.instance
-              .collection('users')
-              .doc(user.uid)
-              .set({'isPro': true}, SetOptions(merge: true));
-          
-          html.window.localStorage['showSuccessPopup'] = 'true';
-          print("DEBUG 4: Database updated and Sticky Note saved. ✅");
-        } catch (e) {
-          print("DEBUG ERROR: Firestore failed: $e ❌");
-        }
-      } else {
-        print("DEBUG 3: No 'success' found in immediate capture. URL was: $immediateUrl");
-      }
+      // 3. ADDED: Watch for URL changes while the app is ALREADY open
+      html.window.onPopState.listen((event) {
+        final newUrl = html.window.location.href;
+        print("DEBUG: URL changed while app open: $newUrl");
+        checkAndProcess(newUrl, user);
+      });
     }
   });
 
