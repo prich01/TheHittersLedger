@@ -1168,12 +1168,15 @@ void _confirmDeleteSeason(BuildContext context, String seasonName, StateSetter s
     // Note: We already passed in 'seasonalResults' from above, 
     // but if you want to re-filter within this tab, keep this:
     List<AtBatLog> filteredResults = seasonalResults.where((l) {
-      if (query.isEmpty) return true;
-      final searchLower = query.toLowerCase();
-      return l.pitcher.toLowerCase().contains(searchLower) ||
-             l.team.toLowerCase().contains(searchLower) ||
-             l.date.toLowerCase().contains(searchLower);
-    }).toList();
+  if (query.isEmpty) return true;
+  final searchLower = query.toLowerCase();
+  
+  // We use l.hand here because that corresponds to your Dropdown's '_hand' variable
+  // We add "HP" so users can search "RHP" even though you only store "R"
+  final masterString = "${l.pitcher} ${l.team} ${l.date} ${l.hand}HP".toLowerCase();
+  
+  return masterString.contains(searchLower);
+}).toList();
 
     return Column(children: [
       Padding(
@@ -1182,7 +1185,7 @@ void _confirmDeleteSeason(BuildContext context, String seasonName, StateSetter s
           controller: _searchController,
           onChanged: (v) => setState(() {}),
           decoration: const InputDecoration(
-            hintText: "SEARCH PITCHER NAME...",
+            hintText: "SEARCH PITCHER, TEAM, DATE, OR HAND (LHP/RHP)...",
             prefixIcon: Icon(Icons.search, size: 20, color: Color(0xFFD4AF37)),
           ),
         ),
@@ -1338,7 +1341,41 @@ Widget _buildHistoryCard(AtBatLog log) {
                 ),
               ),
             ),
-            // GREEN QAB BADGE - Only shows if it was a Quality At-Bat
+            // NEW: Team abbreviation (e.g., DET)
+            if (log.team.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: Text(
+                  log.team.toUpperCase(),
+                  style: const TextStyle(
+                    color: Colors.white24,
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            // LHP/RHP Badge
+            Container(
+              margin: const EdgeInsets.only(right: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              decoration: BoxDecoration(
+                color: log.hand == "L" ? Colors.red.withOpacity(0.2) : Colors.blue.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(4),
+                border: Border.all(
+                  color: log.hand == "L" ? Colors.redAccent : Colors.blueAccent, 
+                  width: 0.5
+                ),
+              ),
+              child: Text(
+                "${log.hand}HP", 
+                style: TextStyle(
+                  fontSize: 9, 
+                  color: log.hand == "L" ? Colors.redAccent : Colors.blueAccent,
+                  fontWeight: FontWeight.bold
+                ),
+              ),
+            ),
+            // GREEN QAB BADGE
             if (log.isQAB)
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
