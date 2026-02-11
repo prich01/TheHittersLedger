@@ -1280,20 +1280,17 @@ void _confirmDeleteSeason(BuildContext context, String seasonName, StateSetter s
   ]);
 
 Widget _buildHistoryCard(AtBatLog log) {
-  // 1. UNIQUE KEY FIX: Now includes abNumber so facing the same pitcher twice works!
-  // We use the database ID if it exists, otherwise we create a unique string.
-  final String logId = "${log.pitcher}_${log.date}_AB${log.abNumber}"; 
+  final String logId = "${log.pitcher}_${log.date}_AB${log.abNumber}";
   _atBatKeys[logId] ??= GlobalKey();
   final GlobalKey cardKey = _atBatKeys[logId]!;
 
-  // 2. Legend helper (maintained your specific colors)
   Widget buildInlineLegend() {
     final Map<String, Color> pitchColors = {
-      "Fastball": Colors.red, 
-      "Slider": Colors.blue, 
-      "Curveball": Colors.cyan, 
-      "Changeup": Colors.green, 
-      "Cutter": Colors.orange, 
+      "Fastball": Colors.red,
+      "Slider": Colors.blue,
+      "Curveball": Colors.cyan,
+      "Changeup": Colors.green,
+      "Cutter": Colors.orange,
       "Other": Colors.purple
     };
 
@@ -1322,12 +1319,14 @@ Widget _buildHistoryCard(AtBatLog log) {
     );
   }
 
-  // 3. The Visual Card
   return RepaintBoundary(
     key: cardKey,
     child: Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-      title: Text(
+      child: ExpansionTile(
+        iconColor: const Color(0xFFD4AF37),
+        // TITLE SECTION: This is now safely inside the ExpansionTile
+        title: Text(
           log.pitcher.toUpperCase(),
           style: const TextStyle(
             color: Color(0xFFD4AF37),
@@ -1335,6 +1334,7 @@ Widget _buildHistoryCard(AtBatLog log) {
             fontSize: 16,
           ),
         ),
+        // SUBTITLE SECTION: Stacked vertically for mobile
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -1346,31 +1346,19 @@ Widget _buildHistoryCard(AtBatLog log) {
                     padding: const EdgeInsets.only(right: 8),
                     child: Text(
                       log.team.toUpperCase(),
-                      style: const TextStyle(
-                        color: Colors.white38, 
-                        fontSize: 11, 
-                        fontWeight: FontWeight.bold
-                      ),
+                      style: const TextStyle(color: Colors.white38, fontSize: 11, fontWeight: FontWeight.bold),
                     ),
                   ),
-                // LHP/RHP Badge
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                   decoration: BoxDecoration(
                     color: log.hand == "L" ? Colors.red.withOpacity(0.15) : Colors.blue.withOpacity(0.15),
                     borderRadius: BorderRadius.circular(4),
-                    border: Border.all(
-                      color: log.hand == "L" ? Colors.redAccent : Colors.blueAccent, 
-                      width: 0.5
-                    ),
+                    border: Border.all(color: log.hand == "L" ? Colors.redAccent : Colors.blueAccent, width: 0.5),
                   ),
                   child: Text(
                     "${log.hand}HP",
-                    style: TextStyle(
-                      fontSize: 9, 
-                      color: log.hand == "L" ? Colors.redAccent : Colors.blueAccent, 
-                      fontWeight: FontWeight.bold
-                    ),
+                    style: TextStyle(fontSize: 9, color: log.hand == "L" ? Colors.redAccent : Colors.blueAccent, fontWeight: FontWeight.bold),
                   ),
                 ),
                 if (log.isQAB)
@@ -1378,14 +1366,8 @@ Widget _buildHistoryCard(AtBatLog log) {
                     padding: const EdgeInsets.only(left: 8),
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: Colors.green.withOpacity(0.7), 
-                        borderRadius: BorderRadius.circular(4)
-                      ),
-                      child: const Text(
-                        "QAB", 
-                        style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold)
-                      ),
+                      decoration: BoxDecoration(color: Colors.green.withOpacity(0.7), borderRadius: BorderRadius.circular(4)),
+                      child: const Text("QAB", style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold)),
                     ),
                   ),
               ],
@@ -1396,10 +1378,6 @@ Widget _buildHistoryCard(AtBatLog log) {
               style: const TextStyle(color: Colors.white24, fontSize: 11),
             ),
           ],
-        ),
-        subtitle: Text(
-          "AB #${log.abNumber} • ${log.result} • ${log.date}", // Added AB# here for clarity
-          style: const TextStyle(color: Colors.white38, fontSize: 12),
         ),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
@@ -1423,21 +1401,13 @@ Widget _buildHistoryCard(AtBatLog log) {
               children: [
                 Text(
                   "TEAM: ${log.team} | ${log.hand}HP | VELO: ${log.velocity}",
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12,
-                    color: Colors.white70,
-                  ),
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.white70),
                 ),
                 const Divider(height: 24, color: Colors.white10),
                 if (log.swingThought.isNotEmpty) ...[
                   Text(
                     "THOUGHT: ${log.swingThought.toUpperCase()}",
-                    style: const TextStyle(
-                      color: Colors.greenAccent,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 13,
-                    ),
+                    style: const TextStyle(color: Colors.greenAccent, fontWeight: FontWeight.bold, fontSize: 13),
                   ),
                   const SizedBox(height: 16),
                 ],
@@ -1455,11 +1425,7 @@ Widget _buildHistoryCard(AtBatLog log) {
                     Expanded(
                       child: Text(
                         "NOTES: ${log.notes}",
-                        style: const TextStyle(
-                          color: Colors.white54,
-                          fontSize: 13,
-                          height: 1.5,
-                        ),
+                        style: const TextStyle(color: Colors.white54, fontSize: 13, height: 1.5),
                       ),
                     ),
                   ],
