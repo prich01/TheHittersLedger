@@ -1330,66 +1330,77 @@ Widget _buildHistoryCard(AtBatLog log) {
       child: ExpansionTile(
         iconColor: const Color(0xFFD4AF37),
         title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Expanded(
+            // 1. The Name
+            Flexible(
               child: Text(
                 log.pitcher.toUpperCase(),
+                overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
                   color: Color(0xFFD4AF37),
                   fontWeight: FontWeight.w900,
                   fontSize: 15,
                 ),
-              ),
-            ),
-            // NEW: Team abbreviation (e.g., DET)
-            if (log.team.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: Text(
-                  log.team.toUpperCase(),
-                  style: const TextStyle(
-                    color: Colors.white24,
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
+              ), // Closes Text
+            ), // Closes Flexible
+            
+            const SizedBox(width: 8),
+
+            // 2. The Badges Row (This is the new nested part)
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (log.team.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(right: 6),
+                    child: Text(
+                      log.team.toUpperCase(),
+                      style: const TextStyle(
+                        color: Colors.white24,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: log.hand == "L" ? Colors.red.withOpacity(0.2) : Colors.blue.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(4),
+                    border: Border.all(
+                      color: log.hand == "L" ? Colors.redAccent : Colors.blueAccent, 
+                      width: 0.5
+                    ),
+                  ),
+                  child: Text(
+                    "${log.hand}HP", 
+                    style: TextStyle(
+                      fontSize: 9, 
+                      color: log.hand == "L" ? Colors.redAccent : Colors.blueAccent,
+                      fontWeight: FontWeight.bold
+                    ),
                   ),
                 ),
-              ),
-            // LHP/RHP Badge
-            Container(
-              margin: const EdgeInsets.only(right: 8),
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-              decoration: BoxDecoration(
-                color: log.hand == "L" ? Colors.red.withOpacity(0.2) : Colors.blue.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(4),
-                border: Border.all(
-                  color: log.hand == "L" ? Colors.redAccent : Colors.blueAccent, 
-                  width: 0.5
-                ),
-              ),
-              child: Text(
-                "${log.hand}HP", 
-                style: TextStyle(
-                  fontSize: 9, 
-                  color: log.hand == "L" ? Colors.redAccent : Colors.blueAccent,
-                  fontWeight: FontWeight.bold
-                ),
-              ),
-            ),
-            // GREEN QAB BADGE
-            if (log.isQAB)
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                decoration: BoxDecoration(
-                  color: Colors.green.withOpacity(0.8),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: const Text(
-                  "QAB",
-                  style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
-                ),
-              ),
-          ],
-        ),
+                if (log.isQAB)
+                  Padding(
+                    padding: const EdgeInsets.only(left: 6),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: Colors.green.withOpacity(0.8),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: const Text(
+                        "QAB",
+                        style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+              ], // Closes Badge Row Children
+            ), // Closes Badge Row
+          ], // Closes Main Row Children
+        ), // Closes Main Row
         subtitle: Text(
           "AB #${log.abNumber} • ${log.result} • ${log.date}", // Added AB# here for clarity
           style: const TextStyle(color: Colors.white38, fontSize: 12),
