@@ -1327,46 +1327,37 @@ Widget _buildHistoryCard(AtBatLog log) {
     key: cardKey,
     child: Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-      child: ExpansionTile(
-        iconColor: const Color(0xFFD4AF37),
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      title: Text(
+          log.pitcher.toUpperCase(),
+          style: const TextStyle(
+            color: Color(0xFFD4AF37),
+            fontWeight: FontWeight.w900,
+            fontSize: 16,
+          ),
+        ),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 1. The Name
-            Flexible(
-              child: Text(
-                log.pitcher.toUpperCase(),
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  color: Color(0xFFD4AF37),
-                  fontWeight: FontWeight.w900,
-                  fontSize: 15,
-                ),
-              ), // Closes Text
-            ), // Closes Flexible
-            
-            const SizedBox(width: 8),
-
-            // 2. The Badges Row (This is the new nested part)
+            const SizedBox(height: 6),
             Row(
-              mainAxisSize: MainAxisSize.min,
               children: [
                 if (log.team.isNotEmpty)
                   Padding(
-                    padding: const EdgeInsets.only(right: 6),
+                    padding: const EdgeInsets.only(right: 8),
                     child: Text(
                       log.team.toUpperCase(),
                       style: const TextStyle(
-                        color: Colors.white24,
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
+                        color: Colors.white38, 
+                        fontSize: 11, 
+                        fontWeight: FontWeight.bold
                       ),
                     ),
                   ),
+                // LHP/RHP Badge
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                   decoration: BoxDecoration(
-                    color: log.hand == "L" ? Colors.red.withOpacity(0.2) : Colors.blue.withOpacity(0.2),
+                    color: log.hand == "L" ? Colors.red.withOpacity(0.15) : Colors.blue.withOpacity(0.15),
                     borderRadius: BorderRadius.circular(4),
                     border: Border.all(
                       color: log.hand == "L" ? Colors.redAccent : Colors.blueAccent, 
@@ -1374,33 +1365,38 @@ Widget _buildHistoryCard(AtBatLog log) {
                     ),
                   ),
                   child: Text(
-                    "${log.hand}HP", 
+                    "${log.hand}HP",
                     style: TextStyle(
                       fontSize: 9, 
-                      color: log.hand == "L" ? Colors.redAccent : Colors.blueAccent,
+                      color: log.hand == "L" ? Colors.redAccent : Colors.blueAccent, 
                       fontWeight: FontWeight.bold
                     ),
                   ),
                 ),
                 if (log.isQAB)
                   Padding(
-                    padding: const EdgeInsets.only(left: 6),
+                    padding: const EdgeInsets.only(left: 8),
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
-                        color: Colors.green.withOpacity(0.8),
-                        borderRadius: BorderRadius.circular(4),
+                        color: Colors.green.withOpacity(0.7), 
+                        borderRadius: BorderRadius.circular(4)
                       ),
                       child: const Text(
-                        "QAB",
-                        style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
+                        "QAB", 
+                        style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold)
                       ),
                     ),
                   ),
-              ], // Closes Badge Row Children
-            ), // Closes Badge Row
-          ], // Closes Main Row Children
-        ), // Closes Main Row
+              ],
+            ),
+            const SizedBox(height: 6),
+            Text(
+              "AB #${log.abNumber} • ${log.result} • ${log.date}",
+              style: const TextStyle(color: Colors.white24, fontSize: 11),
+            ),
+          ],
+        ),
         subtitle: Text(
           "AB #${log.abNumber} • ${log.result} • ${log.date}", // Added AB# here for clarity
           style: const TextStyle(color: Colors.white38, fontSize: 12),
