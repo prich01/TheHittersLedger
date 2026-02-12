@@ -1612,63 +1612,36 @@ Widget _buildHistoryCard(AtBatLog log) {
               ],
             ),
           ),
+        // ... (Dropdowns are above this) ...
+        
         Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900, letterSpacing: 2, color: Colors.white54)),
         Text("${val.toStringAsFixed(1)}%", style: TextStyle(fontSize: 64, color: col, fontWeight: FontWeight.w900)),
         const SizedBox(height: 30),
 
-        const SizedBox(height: 30),
-        // --- ADD THIS START ---
+        // 1. CHASE PAGE: Shows the custom Red/Blue Heat Map
         if (mode == "chase") ...[
           Builder(builder: (context) {
-            // Filter seasonalLogs by HAND so the map matches the %
             final mapLogs = seasonalLogs.where((l) {
               if (activeHandFilter == "All") return true;
               return l.hand == (activeHandFilter == "RHP" ? "R" : "L");
             }).toList();
-
             return _buildChaseMapUI(mapLogs, activePitchFilter);
           }),
           const SizedBox(height: 15),
           const Text("OUT-OF-ZONE SWINGS (RED = HIT | BLUE = OUT)", 
             style: TextStyle(color: Colors.white24, fontSize: 10, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 30),
         ],
-        // --- ADD THIS END ---
-        
-        // ** NEW: QAB BREAKDOWN LOGIC INSERTED HERE **
-        if (mode == "qab") ...[
-          Container(
-            width: double.infinity,
-            margin: const EdgeInsets.symmetric(horizontal: 20),
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(color: const Color(0xFF1A1D21), borderRadius: BorderRadius.circular(16)),
-            child: Column(children: [
-              const Text("QAB BREAKDOWN", style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.white24)),
-              const SizedBox(height: 20),
-              _buildSimpleBar("VS RHP", 
-                () {
-                  final rLogs = seasonalLogs.where((l) => l.hand == "R").toList();
-                  if (rLogs.isEmpty) return 0.0;
-                  return (rLogs.where((l) => l.isQAB).length / rLogs.length) * 100;
-                }(), 
-                col
-              ),
-              const SizedBox(height: 20),
-              _buildSimpleBar("VS LHP", 
-                () {
-                  final lLogs = seasonalLogs.where((l) => l.hand == "L").toList();
-                  if (lLogs.isEmpty) return 0.0;
-                  return (lLogs.where((l) => l.isQAB).length / lLogs.length) * 100;
-                }(), 
-                col
-              ),
-            ]),
-          ),
-          const SizedBox(height: 30),
-        ],
-        // ** END NEW QAB CODE **
 
-        if (mode != "qab") _buildZoneMap(seasonalLogs, mode: mode, pitchTypeFilter: activePitchFilter, handFilter: activeHandFilter),
+        // 2. QAB PAGE: You'll likely want your QAB Breakdown Bars here
+        if (mode == "qab") ...[
+           // ... (your QAB Breakdown Container goes here) ...
+        ],
+
+        // 3. 1ST PITCH PAGE (or any other): Shows the Standard Heat Map
+        // This 'if' ensures it stays hidden when you are looking at Chase or QAB
+        if (mode != "chase" && mode != "qab") 
+          _buildZoneMap(seasonalLogs, mode: mode, pitchTypeFilter: activePitchFilter, handFilter: activeHandFilter),
+
         const SizedBox(height: 100),
       ]),
     );
