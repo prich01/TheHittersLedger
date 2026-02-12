@@ -1632,9 +1632,47 @@ Widget _buildHistoryCard(AtBatLog log) {
             style: TextStyle(color: Colors.white24, fontSize: 10, fontWeight: FontWeight.bold)),
         ],
 
-        // 2. QAB PAGE: You'll likely want your QAB Breakdown Bars here
+        // 2. QAB PAGE: Shows the breakdown for Lefties and Righties
         if (mode == "qab") ...[
-           // ... (your QAB Breakdown Container goes here) ...
+          Container(
+            width: double.infinity,
+            margin: const EdgeInsets.symmetric(horizontal: 20),
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: const Color(0xFF1A1D21), 
+              borderRadius: BorderRadius.circular(16)
+            ),
+            child: Column(
+              children: [
+                const Text("QAB BREAKDOWN", 
+                  style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.white24)),
+                const SizedBox(height: 20),
+                
+                // VS RHP Bar
+                _buildSimpleBar("VS RHP", 
+                  () {
+                    final rLogs = seasonalLogs.where((l) => l.hand == "R").toList();
+                    if (rLogs.isEmpty) return 0.0;
+                    return (rLogs.where((l) => l.isQAB).length / rLogs.length) * 100;
+                  }(), 
+                  col // This uses the Green color passed into the page
+                ),
+                
+                const SizedBox(height: 20),
+                
+                // VS LHP Bar
+                _buildSimpleBar("VS LHP", 
+                  () {
+                    final lLogs = seasonalLogs.where((l) => l.hand == "L").toList();
+                    if (lLogs.isEmpty) return 0.0;
+                    return (lLogs.where((l) => l.isQAB).length / lLogs.length) * 100;
+                  }(), 
+                  col
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 30),
         ],
 
         // 3. 1ST PITCH PAGE (or any other): Shows the Standard Heat Map
