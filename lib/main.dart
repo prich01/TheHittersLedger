@@ -1052,6 +1052,76 @@ void _confirmDeleteSeason(BuildContext context, String seasonName, StateSetter s
     return oZonePitches == 0 ? 0.0 : (oZoneSwings / oZonePitches) * 100;
   }
 
+  // 1. UPDATED HELPER: Respects the Pitch Type filter
+  List<Pitch> _getChaseOnlyPitches(List<AtBatLog> logs, String pitchFilter) {
+    List<Pitch> chasePitches = [];
+    for (var log in logs) {
+      for (int i = 0; i < log.pitches.length; i++) {
+        var p = log.pitches[i];
+        
+        // Match the pitch type filter from your dropdown
+        if (pitchFilter != "All" && p.type != pitchFilter) continue;
+
+        bool isOutside = (p.location.dx < 0.25 || p.location.dx > 0.75 || 
+                           p.location.dy < 0.28 || p.location.dy > 0.77);
+        
+        if (isOutside) {
+          bool isContact = (i == log.pitches.length - 1) && !["BB", "HBP", "K"].contains(log.result);
+          if (p.isFoul || p.isMiss || isContact) {
+            chasePitches.add(p);
+          }
+        }
+      }
+    }
+    return chasePitches;
+  }
+
+  // 2. UPDATED UI: Builds the map based on the filtered data
+  Widget _buildChaseMapUI(List<AtBatLog> logs, String pitchFilter) {
+    final chasePitches = _getChaseOnlyPitches(logs, pitchFilter);
+
+    return Container(
+      width: 220,
+      height: 260,
+      decoration: BoxDecoration(
+        color: Colors.black45,
+        border: Border.all(color: Colors.white10, width: 2),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Stack(
+        children: [
+          Center(
+            child: Container(
+              width: 110, // 0.25 to 0.75
+              height: 127, // 0.28 to 0.77
+              decoration: BoxDecoration(border: Border.all(color: Colors.white12, width: 1.5)),
+            ),
+          ),
+          ...chasePitches.map((p) {
+            final parentLog = logs.firstWhere((l) => l.pitches.contains(p));
+            bool isHit = ["1B", "2B", "3B", "HR"].contains(parentLog.result);
+
+            return Positioned(
+              left: p.location.dx * 220 - 5,
+              top: p.location.dy * 260 - 5,
+              child: Container(
+                width: 10,
+                height: 10,
+                decoration: BoxDecoration(
+                  color: isHit ? Colors.red : Colors.blue,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(color: (isHit ? Colors.red : Colors.blue).withOpacity(0.4), blurRadius: 4)
+                  ],
+                ),
+              ),
+            );
+          }).toList(),
+        ],
+      ),
+    );
+  }
+
   double _calculateFirstPitchSwing(List<AtBatLog> logs, {String pitchType = "All", String hand = "All"}) {
     int totalFirstPitches = 0;
     int firstPitchSwings = 0;
@@ -1545,6 +1615,25 @@ Widget _buildHistoryCard(AtBatLog log) {
         Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900, letterSpacing: 2, color: Colors.white54)),
         Text("${val.toStringAsFixed(1)}%", style: TextStyle(fontSize: 64, color: col, fontWeight: FontWeight.w900)),
         const SizedBox(height: 30),
+
+        const SizedBox(height: 30),
+        // --- ADD THIS START ---
+        if (mode == "chase") ...[
+          Builder(builder: (context) {
+            // Filter seasonalLogs by HAND so the map matches the %
+            final mapLogs = seasonalLogs.where((l) {
+              if (activeHandFilter == "All") return true;
+              return l.hand == (activeHandFilter == "RHP" ? "R" : "L");
+            }).toList();
+
+            return _buildChaseMapUI(mapLogs, activePitchFilter);
+          }),
+          const SizedBox(height: 15),
+          const Text("OUT-OF-ZONE SWINGS (RED = HIT | BLUE = OUT)", 
+            style: TextStyle(color: Colors.white24, fontSize: 10, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 30),
+        ],
+        // --- ADD THIS END ---
         
         // ** NEW: QAB BREAKDOWN LOGIC INSERTED HERE **
         if (mode == "qab") ...[
