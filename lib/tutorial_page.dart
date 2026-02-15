@@ -1,6 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
+// THIS PART WAS MISSING:
+class TutorialPage extends StatefulWidget {
+  const TutorialPage({super.key});
+
+  @override
+  _TutorialPageState createState() => _TutorialPageState();
+}
+
+// THIS PART YOU ALREADY HAD:
 class _TutorialPageState extends State<TutorialPage> {
   late YoutubePlayerController _controller;
 
@@ -12,7 +21,6 @@ class _TutorialPageState extends State<TutorialPage> {
       flags: const YoutubePlayerFlags(
         autoPlay: false,
         mute: false,
-        // Add these two to help with the "handshake"
         disableDragSeek: false,
         loop: false,
         isLive: false,
@@ -28,21 +36,19 @@ class _TutorialPageState extends State<TutorialPage> {
       backgroundColor: Colors.black,
       appBar: AppBar(
         title: const Text("App Tutorial"), 
-        backgroundColor: Colors.black, // Changed from transparent for better contrast
+        backgroundColor: Colors.black,
         elevation: 0,
       ),
       body: Center(
         child: YoutubePlayerBuilder(
-          // Wrap with Builder to handle orientation changes better
           player: YoutubePlayer(
             controller: _controller,
             showVideoProgressIndicator: true,
-            progressIndicatorColor: const Color(0xFFD4AF37), // Matches your gold theme
+            progressIndicatorColor: const Color(0xFFD4AF37),
             progressColors: const ProgressBarColors(
               playedColor: Color(0xFFD4AF37),
               handleColor: Colors.amber,
             ),
-            // This is the "Ghosting" fix:
             onReady: () {
               debugPrint('Player is ready.');
             },
@@ -59,3 +65,10 @@ class _TutorialPageState extends State<TutorialPage> {
       ),
     );
   }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+}
