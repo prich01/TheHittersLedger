@@ -16,7 +16,7 @@ class _TutorialPageState extends State<TutorialPage> {
     // e.g., if URL is youtube.com/watch?v=dQw4w9WgXcQ, the ID is dQw4w9WgXcQ
     _controller = YoutubePlayerController(
       initialVideoId: 'A8JpOg_8K-g',
-      flags: const YoutubePlayerFlags(autoPlay: true, mute: false),
+      flags: const YoutubePlayerFlags(autoPlay: false, mute: false),
     );
   }
 
