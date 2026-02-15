@@ -18,7 +18,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'tutorial_page.dart';
+
 
 import 'firebase_options.dart';
 import 'paywall_screen.dart';
@@ -527,11 +527,23 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   const SizedBox(height: 20),
                   InkWell(
-                    onTap: () {
-  Navigator.push(
-    context,
-    MaterialPageRoute(builder: (context) =>  TutorialPage()),
-  );
+                    onTap: () async {
+  final Uri url = Uri.parse('https://www.youtube.com/watch?v=A8JpOg_8K-g');
+  
+  // This checks if the phone can open the link (YouTube app or Browser)
+  if (await canLaunchUrl(url)) {
+    await launchUrl(
+      url,
+      mode: LaunchMode.externalApplication, // This forces it to open outside your app
+    );
+  } else {
+    // If it fails, it shows a quick message to the user
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Could not open tutorial video.")),
+      );
+    }
+  }
 },
                     child: Container(
                       width: double.infinity,
