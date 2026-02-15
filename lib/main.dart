@@ -41,7 +41,11 @@ Future<void> main() async {
         await FirebaseFirestore.instance
             .collection('users')
             .doc(user.uid)
-            .set({'isPro': true}, SetOptions(merge: true));
+            .set({
+              'isPro': true,
+              'accountStatus': 'pro', // This matches the field in your screenshot
+              'lastUpdated': FieldValue.serverTimestamp(),
+            }, SetOptions(merge: true));
         
         html.window.localStorage['showSuccessPopup'] = 'true';
         print("DEBUG 4: Success confirmed. ✅");
