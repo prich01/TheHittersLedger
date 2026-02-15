@@ -18,6 +18,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'tutorial_page.dart';
 
 import 'firebase_options.dart';
 import 'paywall_screen.dart';
@@ -495,41 +496,72 @@ class _HomeScreenState extends State<HomeScreen> {
               painter: StadiumLightingPainter(),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0),
-            child: Column(
-              children: [
-                const SizedBox(height: 20),
-                _buildHeroCard(
-                  context,
-                  "YOUR LEDGER",
-                  "RECORD AT-BATS & SCOUT",
-                  Icons.analytics_outlined,
-                  const Color(0xFFD4AF37),
-                  () => Navigator.push(context, MaterialPageRoute(builder: (context) => HitterLogScreen())),
-                ),
-                const SizedBox(height: 24),
-                Expanded(
-                  child: GridView.count(
-                    physics: const ClampingScrollPhysics(),
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 16,
-                    mainAxisSpacing: 16,
-                    children: [
-                      _buildMenuCard(context, "5 TRUTHS", Icons.bolt, Colors.blue, const SimpleTruthsScreen()),
-                      _buildMenuCard(context, "IMAGERY", Icons.remove_red_eye_outlined, Colors.purple, const MentalImageryScreen()),
-                      _buildMenuCard(context, "SWING THOUGHTS", Icons.psychology_outlined, Colors.green, const SwingThoughtsScreen()),
-                      _buildMenuCard(context, "CAGE ROUTINES", Icons.sports_baseball_outlined, Colors.red, const CageRoutinesScreen()),
-                    ],
+          SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              child: Column(
+                children: [
+                  const SizedBox(height: 20),
+                  _buildHeroCard(
+                    context,
+                    "YOUR LEDGER",
+                    "RECORD AT-BATS & SCOUT",
+                    Icons.analytics_outlined,
+                    const Color(0xFFD4AF37),
+                    () => Navigator.push(context, MaterialPageRoute(builder: (context) => HitterLogScreen())),
                   ),
-                ),
-              ],
+                  const SizedBox(height: 24),
+                  SizedBox(
+                    height: 350, 
+                    child: GridView.count(
+                      physics: const NeverScrollableScrollPhysics(),
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 16,
+                      mainAxisSpacing: 16,
+                      children: [
+                        _buildMenuCard(context, "5 TRUTHS", Icons.bolt, Colors.blue, const SimpleTruthsScreen()),
+                        _buildMenuCard(context, "IMAGERY", Icons.remove_red_eye_outlined, Colors.purple, const MentalImageryScreen()),
+                        _buildMenuCard(context, "SWING THOUGHTS", Icons.psychology_outlined, Colors.green, const SwingThoughtsScreen()),
+                        _buildMenuCard(context, "CAGE ROUTINES", Icons.sports_baseball_outlined, Colors.red, const CageRoutinesScreen()),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  InkWell(
+                    onTap: () {
+  Navigator.push(
+    context,
+    MaterialPageRoute(builder: (context) => const TutorialPage()),
+  );
+},
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.05),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.white10),
+                      ),
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.play_circle_fill, color: Colors.redAccent),
+                          SizedBox(width: 10),
+                          Text("WATCH APP TUTORIAL", 
+                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, letterSpacing: 1.2)),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 40),
+                ],
+              ),
             ),
           ),
         ],
       ),
-    );
-  }
+    ); // <--- Matches Scaffold
+  } // <--- Matches build method
 
   // --- UI HELPER METHODS ---
   Widget _buildHeroCard(BuildContext context, String title, String sub, IconData icon, Color color, VoidCallback onTap) {
