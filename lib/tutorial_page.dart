@@ -1,22 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
-class TutorialPage extends StatefulWidget {
-  @override
-  _TutorialPageState createState() => _TutorialPageState();
-}
-
 class _TutorialPageState extends State<TutorialPage> {
   late YoutubePlayerController _controller;
 
   @override
   void initState() {
     super.initState();
-    // Replace 'VIDEO_ID' with the actual ID from your YouTube URL
-    // e.g., if URL is youtube.com/watch?v=dQw4w9WgXcQ, the ID is dQw4w9WgXcQ
     _controller = YoutubePlayerController(
       initialVideoId: 'A8JpOg_8K-g',
-      flags: const YoutubePlayerFlags(autoPlay: false, mute: false),
+      flags: const YoutubePlayerFlags(
+        autoPlay: false,
+        mute: false,
+        // Add these two to help with the "handshake"
+        disableDragSeek: false,
+        loop: false,
+        isLive: false,
+        forceHD: false,
+        enableCaption: true,
+      ),
     );
   }
 
@@ -24,20 +26,36 @@ class _TutorialPageState extends State<TutorialPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      appBar: AppBar(title: const Text("App Tutorial"), backgroundColor: Colors.transparent),
+      appBar: AppBar(
+        title: const Text("App Tutorial"), 
+        backgroundColor: Colors.black, // Changed from transparent for better contrast
+        elevation: 0,
+      ),
       body: Center(
-        child: YoutubePlayer(
-          controller: _controller,
-          showVideoProgressIndicator: true,
-          progressIndicatorColor: Colors.red, // Matches the baseball theme
+        child: YoutubePlayerBuilder(
+          // Wrap with Builder to handle orientation changes better
+          player: YoutubePlayer(
+            controller: _controller,
+            showVideoProgressIndicator: true,
+            progressIndicatorColor: const Color(0xFFD4AF37), // Matches your gold theme
+            progressColors: const ProgressBarColors(
+              playedColor: Color(0xFFD4AF37),
+              handleColor: Colors.amber,
+            ),
+            // This is the "Ghosting" fix:
+            onReady: () {
+              debugPrint('Player is ready.');
+            },
+          ),
+          builder: (context, player) {
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                player,
+              ],
+            );
+          },
         ),
       ),
     );
   }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-}
