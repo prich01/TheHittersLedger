@@ -511,20 +511,19 @@ class _HomeScreenState extends State<HomeScreen> {
                     () => Navigator.push(context, MaterialPageRoute(builder: (context) => HitterLogScreen())),
                   ),
                   const SizedBox(height: 24),
-                  SizedBox(
-                    height: 350, 
-                    child: GridView.count(
-                      physics: const NeverScrollableScrollPhysics(),
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 16,
-                      mainAxisSpacing: 16,
-                      children: [
-                        _buildMenuCard(context, "5 TRUTHS", Icons.bolt, Colors.blue, const SimpleTruthsScreen()),
-                        _buildMenuCard(context, "IMAGERY", Icons.remove_red_eye_outlined, Colors.purple, const MentalImageryScreen()),
-                        _buildMenuCard(context, "SWING THOUGHTS", Icons.psychology_outlined, Colors.green, const SwingThoughtsScreen()),
-                        _buildMenuCard(context, "CAGE ROUTINES", Icons.sports_baseball_outlined, Colors.red, const CageRoutinesScreen()),
-                      ],
-                    ),
+                  // Removed the SizedBox with fixed height
+                  GridView.count(
+                    shrinkWrap: true, // This makes the grid only as tall as the content
+                    physics: const NeverScrollableScrollPhysics(), // Important!
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 16,
+                    mainAxisSpacing: 16,
+                    children: [
+                      _buildMenuCard(context, "5 TRUTHS", Icons.bolt, Colors.blue, const SimpleTruthsScreen()),
+                      _buildMenuCard(context, "IMAGERY", Icons.remove_red_eye_outlined, Colors.purple, const MentalImageryScreen()),
+                      _buildMenuCard(context, "SWING THOUGHTS", Icons.psychology_outlined, Colors.green, const SwingThoughtsScreen()),
+                      _buildMenuCard(context, "CAGE ROUTINES", Icons.sports_baseball_outlined, Colors.red, const CageRoutinesScreen()),
+                    ],
                   ),
                   const SizedBox(height: 20),
                   InkWell(
