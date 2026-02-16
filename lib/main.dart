@@ -654,6 +654,7 @@ class HitterLogScreen extends StatefulWidget {
 class _HitterLogScreenState extends State<HitterLogScreen> {
   // YOUR VARIABLES START HERE
   bool isPro = false; // Add this if it's not there
+  final TextEditingController _searchController = TextEditingController();
   List<AtBatLog> _allLogs = [];
   // --- ADD THESE SEASON VARIABLES ---
   List<String> _seasons = ['CURRENT SEASON']; // Initial default season
@@ -1041,18 +1042,7 @@ void _confirmDeleteSeason(BuildContext context, String seasonName, StateSetter s
     );
   }
   
-  TextEditingController _searchController = TextEditingController();
-
-  String _selectedHandFilter = "All";
-  String _selectedPitchFilter = "All";
-
-  String _chaseHandFilter = "All";
-  String _chasePitchFilter = "All";
-
-  String _firstHandFilter = "All";
-  String _firstPitchFilter = "All";
-
-  bool _resultPitchOnly = true;
+  
 
   final Map<String, Color> _pData = {
     "Fastball": Colors.red,
