@@ -1275,6 +1275,7 @@ void _confirmDeleteSeason(BuildContext context, String seasonName, StateSetter s
   pData: _pData, 
   activeSeason: _activeSeason,
   currentLogCount: _allLogs.length, // Add this line!
+  isPro: isPro,
 ),
     ),
   );
@@ -1850,12 +1851,14 @@ class EntryForm extends StatefulWidget {
   final Map<String, Color> pData;
   final String activeSeason;
   final int currentLogCount; // The "Scoreboard" for the paywall
+  final bool isPro;
 
   const EntryForm({
     super.key, 
     required this.pData, 
     required this.activeSeason, 
     required this.currentLogCount, // Required so we can check the limit
+    this.isPro = false,
   });
 
   @override State<EntryForm> createState() => _EntryFormState();
@@ -2019,15 +2022,16 @@ class _EntryFormState extends State<EntryForm> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
     ), 
     onPressed: () {
-      // 1. Check if they've hit the limit
-      if (widget.currentLogCount >= 10) {
-        // 2. Stop the save and show the Paywall
+      // 1. Check if they hit the limit AND they are NOT pro
+      if (widget.currentLogCount >= 10 && !widget.isPro) { 
+        
+        // 2. Only show Paywall if they are over 10 AND NOT Pro
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => const PaywallScreen()),
         );
       } else {
-        // 3. If under the limit, pop back and save to Firebase as normal
+        // 3. If they are Pro (OR under the limit), let them save!
         Navigator.pop(
           context, 
           AtBatLog(
