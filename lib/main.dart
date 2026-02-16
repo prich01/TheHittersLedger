@@ -653,6 +653,7 @@ class HitterLogScreen extends StatefulWidget {
 // 3. THE SCREEN STATE (Where the logic lives)
 class _HitterLogScreenState extends State<HitterLogScreen> {
   // YOUR VARIABLES START HERE
+  bool isPro = false; // Add this if it's not there
   List<AtBatLog> _allLogs = [];
   // --- ADD THESE SEASON VARIABLES ---
   List<String> _seasons = ['CURRENT SEASON']; // Initial default season
@@ -660,6 +661,15 @@ class _HitterLogScreenState extends State<HitterLogScreen> {
   // ----------------------------------
   // ADD THIS: A map to hold the keys for each card
   final Map<String, GlobalKey> _atBatKeys = {};
+
+  // FILTERS (The "Flour and Sugar" your charts need)
+  String _selectedHandFilter = "All";
+  String _selectedPitchFilter = "All";
+  String _chaseHandFilter = "All";
+  String _chasePitchFilter = "All";
+  String _firstHandFilter = "All";
+  String _firstPitchFilter = "All";
+  bool _resultPitchOnly = true;
 
   // ADD THIS: The logic to turn the card into an image
   Future<void> _captureAndShare(GlobalKey key, String pitcherName, String result) async {
@@ -708,9 +718,10 @@ void _downloadImageWeb(Uint8List bytes) {
   // 1. SAVE: Now sends directly to your CloudService with Paywall Catch
   Future<void> _saveLogs(AtBatLog newLog) async {
     try {
+      // 1. Attempt the save
       await CloudService().logAtBat(newLog.toMap());
       
-      // Update the local list so the UI refreshes instantly
+      // 2. If successful, update the UI
       setState(() {
         _allLogs.insert(0, newLog);
       });
@@ -720,17 +731,15 @@ void _downloadImageWeb(Uint8List bytes) {
       );
 
     } catch (e) {
-      // Check if the database blocked the save because of the 10-log limit
-      if (e.toString().contains('PAYWALL_LOCKED')) {
-        
-        // This opens your new Paywall Screen
+      // 3. If it fails, check if it's the paywall
+      // We ONLY show the paywall if the error is PAYWALL_LOCKED AND the app thinks we are NOT pro
+      if (e.toString().contains('PAYWALL_LOCKED') && isPro == false) {
         Navigator.push(
           context, 
           MaterialPageRoute(builder: (context) => const PaywallScreen())
         );
-
       } else {
-        // This handles regular errors (like no wifi)
+        // This handles regular errors (like no wifi) or cloud sync delays
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Could not save: $e')),
         );
@@ -773,9 +782,28 @@ void initState() {
     // Pass the user's ID to the loaders
     _loadUserName(user.uid);
     _loadSeasons(user.uid);
-    _loadLogs(); 
+    _loadLogs();
+    _refreshUserStatus(user.uid); 
   }
 }
+
+Future<void> _refreshUserStatus(String uid) async {
+    try {
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .get();
+
+      if (userDoc.exists && mounted) {
+        setState(() {
+          // This pulls the "isPro" value directly from your Firebase document
+          isPro = userDoc.get('isPro') ?? false;
+        });
+      }
+    } catch (e) {
+      debugPrint("Error refreshing status: $e");
+    }
+  }
 
 // LOAD NAME FROM CLOUD
 Future<void> _loadUserName(String uid) async {
