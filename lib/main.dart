@@ -33,42 +33,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  // Function to process the success logic
-  void checkAndProcess(String url, User user) async {
-    if (url.contains('success')) {
-      print("DEBUG 3: Success detected! Updating Firestore...");
-      try {
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(user.uid)
-            .set({
-              'isPro': true,
-              'accountStatus': 'pro', // This matches the field in your screenshot
-              'lastUpdated': FieldValue.serverTimestamp(),
-            }, SetOptions(merge: true));
-        
-        html.window.localStorage['showSuccessPopup'] = 'true';
-        print("DEBUG 4: Success confirmed. ✅");
-      } catch (e) {
-        print("DEBUG ERROR: $e ❌");
-      }
-    }
-  }
-
-  // 2. Listen for Auth changes
-  FirebaseAuth.instance.authStateChanges().listen((user) {
-    if (user != null) {
-      print("DEBUG 2: User recognized: ${user.uid}");
-      checkAndProcess(currentUrl, user);
-
-      // 3. ADDED: Watch for URL changes while the app is ALREADY open
-      html.window.onPopState.listen((event) {
-        final newUrl = html.window.location.href;
-        print("DEBUG: URL changed while app open: $newUrl");
-        checkAndProcess(newUrl, user);
-      });
-    }
-  });
+  
 
   runApp(const HittersLedgerApp());
 }
@@ -307,50 +272,10 @@ void initState() {
 
   // 2. The "Polished" Success Check
   // This checks every 1 second to see if main() has finished the database update
-  Timer.periodic(const Duration(seconds: 1), (timer) {
-    if (html.window.localStorage['showSuccessPopup'] == 'true') {
-      print("DEBUG: Sticky note found! Clearing and showing popup...");
-      
-      // Stop the timer so it doesn't keep checking
-      timer.cancel(); 
-      
-      // Clear the note
-      html.window.localStorage.remove('showSuccessPopup');
-      
-      // Show the celebration
-      _showSuccessPopup(); 
-    }
-    
-    // Safety: If it's been 10 seconds and nothing found, stop checking
-    if (timer.tick > 10) timer.cancel();
-  });
+  
 }
 
-// 3. Keep your UI method exactly as it was
-void _showSuccessPopup() {
-  if (mounted) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF1A1D21),
-        title: const Text("🚀 PRO PASS ACTIVATED", 
-          style: TextStyle(color: Color(0xFFD4AF37), fontWeight: FontWeight.bold)),
-        content: const Text(
-          "Thank you for your purchase! Your account is now upgraded and all features are unlocked.",
-          style: TextStyle(color: Colors.white),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("LET'S GO!", 
-              style: TextStyle(color: Color(0xFFD4AF37))),
-          ),
-        ],
-      ),
-    );
-  }
-}
+
 
 
   @override
@@ -395,29 +320,14 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  bool _hasShownSuccess = false;
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _checkPaymentSuccess();
-    });
+    
   }
 
-  void _checkPaymentSuccess() {
-    if (Uri.base.toString().contains('success')) {
-      final user = FirebaseAuth.instance.currentUser;
-      if (user != null) {
-        FirebaseFirestore.instance
-            .collection('users')
-            .doc(user.uid)
-            .update({'isPro': true}).then((_) {
-          if (mounted) {
-            _showSuccessDialog();
-          }
-        }).catchError((error) => debugPrint("Update failed: $error"));
-      }
-    }
-  }
+  
 
   void _showSuccessDialog() {
     showDialog(
@@ -451,48 +361,65 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser;
+Widget build(BuildContext context) {
+  final user = FirebaseAuth.instance.currentUser;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("THE HITTER'S LEDGER"),
-        actions: [
-          // StreamBuilder to show the PRO badge in real-time
-          StreamBuilder<DocumentSnapshot>(
-            stream: FirebaseFirestore.instance.collection('users').doc(user?.uid).snapshots(),
+  return Scaffold(
+    appBar: AppBar(
+      title: const Text("THE HITTER'S LEDGER"),
+      actions: [
+        // 1. StreamBuilder for the PRO badge
+        if (user != null) // Only run the stream if we have a user ID
+          StreamBuilder<QuerySnapshot>(
+            stream: FirebaseFirestore.instance
+                .collection('customers')
+                .doc(user.uid)
+                .collection('subscriptions')
+                .where('status', isEqualTo: 'active')
+                .snapshots(),
             builder: (context, snapshot) {
-              if (snapshot.hasData && snapshot.data!.exists) {
-                final data = snapshot.data!.data() as Map<String, dynamic>;
-                if (data['isPro'] == true) {
-                  return Container(
-                    margin: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFD4AF37).withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: const Color(0xFFD4AF37), width: 1),
-                    ),
-                    child: const Row(
-                      children: [
-                        Icon(Icons.bolt, size: 14, color: Color(0xFFD4AF37)),
-                        Text("PRO", style: TextStyle(color: Color(0xFFD4AF37), fontWeight: FontWeight.bold, fontSize: 12)),
-                      ],
-                    ),
-                  );
-                }
+              if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
+                // --- ADD THIS CELEBRATION TRIGGER ---
+        // If the URL contains success and we haven't shown it yet this session
+        if (!_hasShownSuccess && html.window.location.href.contains('success')) {
+          _hasShownSuccess = true; 
+          Future.delayed(Duration.zero, () => _showSuccessDialog());
+        }
+        // -------------------------------------
+                return Container(
+                  margin: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFD4AF37).withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: const Color(0xFFD4AF37), width: 1),
+                  ),
+                  child: const Row(
+                    children: [
+                      Icon(Icons.bolt, size: 14, color: Color(0xFFD4AF37)),
+                      SizedBox(width: 4),
+                      Text("PRO",
+                          style: TextStyle(
+                              color: Color(0xFFD4AF37),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12)),
+                    ],
+                  ),
+                );
               }
-              return const SizedBox.shrink();
+              return const SizedBox.shrink(); // Hide if not Pro
             },
           ),
-          IconButton(
-            icon: const Icon(Icons.logout, color: Colors.redAccent),
-            onPressed: () async {
-              await CloudService().signOut(); // RESTORED YOUR CUSTOM SERVICE
-            },
-          ),
-        ],
-      ),
+
+        // 2. Logout Button
+        IconButton(
+          icon: const Icon(Icons.logout, color: Colors.redAccent),
+          onPressed: () async {
+            await CloudService().signOut();
+          },
+        ),
+      ], // End of actions list
+    ), // End of AppBar
       body: Stack(
         children: [
           Positioned.fill(
@@ -789,22 +716,23 @@ void initState() {
 }
 
 Future<void> _refreshUserStatus(String uid) async {
-    try {
-      DocumentSnapshot userDoc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(uid)
-          .get();
+  try {
+    final subQuery = await FirebaseFirestore.instance
+        .collection('customers')
+        .doc(uid)
+        .collection('subscriptions')
+        .where('status', isEqualTo: 'active')
+        .get();
 
-      if (userDoc.exists && mounted) {
-        setState(() {
-          // This pulls the "isPro" value directly from your Firebase document
-          isPro = userDoc.get('isPro') ?? false;
-        });
-      }
-    } catch (e) {
-      debugPrint("Error refreshing status: $e");
+    if (mounted) {
+      setState(() {
+        isPro = subQuery.docs.isNotEmpty;
+      });
     }
+  } catch (e) {
+    debugPrint("Error refreshing status: $e");
   }
+}
 
 // LOAD NAME FROM CLOUD
 Future<void> _loadUserName(String uid) async {
