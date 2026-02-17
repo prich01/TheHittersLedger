@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:html' as html; // Add this line
 
 class PaywallScreen extends StatelessWidget {
   const PaywallScreen({super.key});
@@ -47,8 +48,8 @@ class PaywallScreen extends StatelessWidget {
           .collection('checkout_sessions')
           .add({
         'price': priceId,
-        'success_url': window.location.origin, // Returns to your home page
-        'cancel_url': window.location.origin,
+        'success_url': html.window.location.origin, // Returns to your home page
+        'cancel_url': html.window.location.origin,
       });
 
       // 3. Listen for the extension to write back a 'url' or an 'error'
