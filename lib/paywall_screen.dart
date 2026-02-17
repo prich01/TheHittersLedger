@@ -43,7 +43,7 @@ class PaywallScreen extends StatelessWidget {
       // 2. Add a document to the checkout_sessions sub-collection.
       // This includes the priceId and the URLs to return to after the purchase.
       final docRef = await FirebaseFirestore.instance
-          .collection('users')
+          .collection('customers')
           .doc(user.uid)
           .collection('checkout_sessions')
           .add({
