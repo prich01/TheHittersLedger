@@ -366,60 +366,120 @@ Widget build(BuildContext context) {
 
   return Scaffold(
     appBar: AppBar(
-      title: const Text("THE HITTER'S LEDGER"),
-      actions: [
-        // 1. StreamBuilder for the PRO badge
-        if (user != null) // Only run the stream if we have a user ID
-          StreamBuilder<QuerySnapshot>(
-            stream: FirebaseFirestore.instance
-                .collection('customers')
-                .doc(user.uid)
-                .collection('subscriptions')
-                .where('status', isEqualTo: 'active')
-                .snapshots(),
-            builder: (context, snapshot) {
-              if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
-                // --- ADD THIS CELEBRATION TRIGGER ---
-        // If the URL contains success and we haven't shown it yet this session
-        if (!_hasShownSuccess && html.window.location.href.contains('success')) {
-          _hasShownSuccess = true; 
-          Future.delayed(Duration.zero, () => _showSuccessDialog());
-        }
-        // -------------------------------------
-                return Container(
-                  margin: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFD4AF37).withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: const Color(0xFFD4AF37), width: 1),
-                  ),
-                  child: const Row(
-                    children: [
-                      Icon(Icons.bolt, size: 14, color: Color(0xFFD4AF37)),
-                      SizedBox(width: 4),
-                      Text("PRO",
-                          style: TextStyle(
-                              color: Color(0xFFD4AF37),
-                              fontWeight: FontWeight.bold,
-                              fontSize: 12)),
-                    ],
-                  ),
-                );
-              }
-              return const SizedBox.shrink(); // Hide if not Pro
-            },
-          ),
+  title: const Text("THE HITTER'S LEDGER"),
+  actions: [
+    // 1. PRO Badge Stream
+    if (user != null)
+      StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection('customers')
+            .doc(user.uid)
+            .collection('subscriptions')
+            .where('status', isEqualTo: 'active')
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
+            if (!_hasShownSuccess && html.window.location.href.contains('success')) {
+              _hasShownSuccess = true;
+              Future.delayed(Duration.zero, () => _showSuccessDialog());
+            }
+            return Container(
+              margin: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: const Color(0xFFD4AF37).withOpacity(0.2),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: const Color(0xFFD4AF37), width: 1),
+              ),
+              child: const Row(
+                children: [
+                  Icon(Icons.bolt, size: 14, color: Color(0xFFD4AF37)),
+                  SizedBox(width: 4),
+                  Text("PRO", style: TextStyle(color: Color(0xFFD4AF37), fontWeight: FontWeight.bold, fontSize: 12)),
+                ],
+              ),
+            );
+          }
+          return const SizedBox.shrink();
+        },
+      ),
 
-        // 2. Logout Button
-        IconButton(
-          icon: const Icon(Icons.logout, color: Colors.redAccent),
-          onPressed: () async {
-            await CloudService().signOut();
-          },
+    // 2. The New Account Menu (Manage Billing & Logout)
+    PopupMenuButton<String>(
+      icon: const Icon(Icons.more_vert),
+      onSelected: (value) async {
+        if (value == 'billing') {
+          // Launch Billing Portal Logic
+          final user = FirebaseAuth.instance.currentUser;
+          if (user == null) return;
+
+          final docRef = await FirebaseFirestore.instance
+              .collection('customers')
+              .doc(user.uid)
+              .collection('portal_sessions')
+              .add({
+            'return_url': html.window.location.href,
+          });
+
+          docRef.snapshots().listen((snap) async {
+            if (snap.exists) {
+              final url = snap.data()?['url'];
+              if (url != null) {
+                await launchUrl(Uri.parse(url));
+              }
+            }
+          });
+        } else if (value == 'logout') {
+          // The Confirmation Dialog (The "Speed Bump")
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              backgroundColor: const Color(0xFF1A1D21),
+              title: const Text("Logout"),
+              content: const Text("Are you sure you want to log out?"),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text("CANCEL", style: TextStyle(color: Colors.white70)),
+                ),
+                TextButton(
+                  onPressed: () async {
+                    Navigator.pop(context);
+                    await CloudService().signOut();
+                  },
+                  child: const Text("LOGOUT", style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold)),
+                ),
+              ],
+            ),
+          );
+        }
+      },
+      itemBuilder: (context) => [
+        const PopupMenuItem(
+          value: 'billing',
+          child: Row(
+            children: [
+              Icon(Icons.credit_card, size: 20, color: Colors.white70),
+              SizedBox(width: 12),
+              Text("Manage Subscription"),
+            ],
+          ),
         ),
-      ], // End of actions list
-    ), // End of AppBar
+        const PopupMenuDivider(),
+        const PopupMenuItem(
+          value: 'logout',
+          child: Row(
+            children: [
+              Icon(Icons.logout, size: 20, color: Colors.redAccent),
+              SizedBox(width: 12),
+              Text("Logout", style: TextStyle(color: Colors.redAccent)),
+            ],
+          ),
+        ),
+      ],
+    ),
+  ],
+),
       body: Stack(
         children: [
           Positioned.fill(
