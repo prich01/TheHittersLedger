@@ -409,28 +409,25 @@ Widget build(BuildContext context) {
       icon: const Icon(Icons.more_vert),
       onSelected: (value) async {
         if (value == 'billing') {
-          // Launch Billing Portal Logic
           final user = FirebaseAuth.instance.currentUser;
           if (user == null) return;
-
           final docRef = await FirebaseFirestore.instance
               .collection('customers')
               .doc(user.uid)
               .collection('portal_sessions')
-              .add({
-            'return_url': html.window.location.href,
-          });
+              .add({'return_url': html.window.location.href});
 
           docRef.snapshots().listen((snap) async {
             if (snap.exists) {
               final url = snap.data()?['url'];
-              if (url != null) {
-                await launchUrl(Uri.parse(url));
-              }
+              if (url != null) await launchUrl(Uri.parse(url));
             }
           });
+        } else if (value == 'privacy') {
+          await launchUrl(Uri.parse('https://thehittersledger.com/privacy'));
+        } else if (value == 'terms') {
+          await launchUrl(Uri.parse('https://thehittersledger.com/terms'));
         } else if (value == 'logout') {
-          // The Confirmation Dialog (The "Speed Bump")
           showDialog(
             context: context,
             builder: (context) => AlertDialog(
@@ -457,27 +454,40 @@ Widget build(BuildContext context) {
       itemBuilder: (context) => [
         const PopupMenuItem(
           value: 'billing',
-          child: Row(
-            children: [
-              Icon(Icons.credit_card, size: 20, color: Colors.white70),
-              SizedBox(width: 12),
-              Text("Manage Subscription"),
-            ],
+          child: ListTile(
+            leading: Icon(Icons.credit_card, size: 20, color: Colors.white70),
+            title: Text("Manage Subscription", style: TextStyle(fontSize: 14)),
+            contentPadding: EdgeInsets.zero,
+          ),
+        ),
+        const PopupMenuDivider(),
+        const PopupMenuItem(
+          value: 'privacy',
+          child: ListTile(
+            leading: Icon(Icons.privacy_tip_outlined, size: 20, color: Colors.white70),
+            title: Text("Privacy Policy", style: TextStyle(fontSize: 14)),
+            contentPadding: EdgeInsets.zero,
+          ),
+        ),
+        const PopupMenuItem(
+          value: 'terms',
+          child: ListTile(
+            leading: Icon(Icons.gavel_outlined, size: 20, color: Colors.white70),
+            title: Text("Terms of Service", style: TextStyle(fontSize: 14)),
+            contentPadding: EdgeInsets.zero,
           ),
         ),
         const PopupMenuDivider(),
         const PopupMenuItem(
           value: 'logout',
-          child: Row(
-            children: [
-              Icon(Icons.logout, size: 20, color: Colors.redAccent),
-              SizedBox(width: 12),
-              Text("Logout", style: TextStyle(color: Colors.redAccent)),
-            ],
+          child: ListTile(
+            leading: Icon(Icons.logout, size: 20, color: Colors.redAccent),
+            title: Text("Logout", style: TextStyle(color: Colors.redAccent, fontSize: 14)),
+            contentPadding: EdgeInsets.zero,
           ),
         ),
       ],
-    ),
+    )
   ],
 ),
       body: Stack(
