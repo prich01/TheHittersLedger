@@ -430,7 +430,11 @@ PopupMenuButton<String>(
         final String? portalUrl = results.data['url'];
         
         if (portalUrl != null && portalUrl.isNotEmpty) {
-          await launchUrl(Uri.parse(portalUrl), mode: LaunchMode.externalApplication)webOnlyWindowName: '_blank', // This is the secret for PWAs on mobile;
+          await launchUrl(
+            Uri.parse(portalUrl), 
+            mode: LaunchMode.externalApplication,
+            webOnlyWindowName: '_blank', 
+          ); // <--- This must be AFTER webOnlyWindowName
         }
       } catch (e) {
         // This will now tell you EXACTLY what is wrong in your debug console
