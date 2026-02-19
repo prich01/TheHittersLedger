@@ -24,6 +24,7 @@ import 'firebase_options.dart';
 import 'paywall_screen.dart';
 import 'auth_screen.dart';
 import 'services/cloud_service.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 
 Future<void> main() async {
   // 1. Immediate capture for cold starts
@@ -405,89 +406,84 @@ Widget build(BuildContext context) {
       ),
 
     // 2. The New Account Menu (Manage Billing & Logout)
-    PopupMenuButton<String>(
-      icon: const Icon(Icons.more_vert),
-      onSelected: (value) async {
-        if (value == 'billing') {
-          final user = FirebaseAuth.instance.currentUser;
-          if (user == null) return;
-          final docRef = await FirebaseFirestore.instance
-              .collection('customers')
-              .doc(user.uid)
-              .collection('portal_sessions')
-              .add({'return_url': html.window.location.href});
+PopupMenuButton<String>(
+  icon: const Icon(Icons.more_vert, color: Colors.white),
+  onSelected: (value) async {
+    if (value == 'billing') {
+      try {
+        // 1. Give the user immediate feedback
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Opening billing portal...")),
+        );
 
-          docRef.snapshots().listen((snap) async {
-            if (snap.exists) {
-              final url = snap.data()?['url'];
-              if (url != null) await launchUrl(Uri.parse(url));
-            }
-          });
-        } else if (value == 'privacy') {
-          await launchUrl(Uri.parse('https://thehittersledger.com/privacy'));
-        } else if (value == 'terms') {
-          await launchUrl(Uri.parse('https://thehittersledger.com/terms'));
-        } else if (value == 'logout') {
-          showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-              backgroundColor: const Color(0xFF1A1D21),
-              title: const Text("Logout"),
-              content: const Text("Are you sure you want to log out?"),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text("CANCEL", style: TextStyle(color: Colors.white70)),
-                ),
-                TextButton(
-                  onPressed: () async {
-                    Navigator.pop(context);
-                    await CloudService().signOut();
-                  },
-                  child: const Text("LOGOUT", style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold)),
-                ),
-              ],
-            ),
-          );
+        // 2. Call the "Direct Hotline" to the Stripe Extension
+        final HttpsCallable callable = FirebaseFunctions.instance.httpsCallable(
+          'ext-firestore-stripe-payments-createPortalLink',
+        );
+
+        // We pass the returnUrl so Stripe knows where to send them back to
+        final results = await callable.call({
+          'returnUrl': 'https://thehittersledger.com', 
+        });
+
+        // 3. The Extension gives us the URL directly in the response
+        final String? portalUrl = results.data['url'];
+        
+        if (portalUrl != null && portalUrl.isNotEmpty) {
+          await launchUrl(Uri.parse(portalUrl), mode: LaunchMode.externalApplication);
         }
-      },
-      itemBuilder: (context) => [
-        const PopupMenuItem(
-          value: 'billing',
-          child: ListTile(
-            leading: Icon(Icons.credit_card, size: 20, color: Colors.white70),
-            title: Text("Manage Subscription", style: TextStyle(fontSize: 14)),
-            contentPadding: EdgeInsets.zero,
-          ),
-        ),
-        const PopupMenuDivider(),
-        const PopupMenuItem(
-          value: 'privacy',
-          child: ListTile(
-            leading: Icon(Icons.privacy_tip_outlined, size: 20, color: Colors.white70),
-            title: Text("Privacy Policy", style: TextStyle(fontSize: 14)),
-            contentPadding: EdgeInsets.zero,
-          ),
-        ),
-        const PopupMenuItem(
-          value: 'terms',
-          child: ListTile(
-            leading: Icon(Icons.gavel_outlined, size: 20, color: Colors.white70),
-            title: Text("Terms of Service", style: TextStyle(fontSize: 14)),
-            contentPadding: EdgeInsets.zero,
-          ),
-        ),
-        const PopupMenuDivider(),
-        const PopupMenuItem(
-          value: 'logout',
-          child: ListTile(
-            leading: Icon(Icons.logout, size: 20, color: Colors.redAccent),
-            title: Text("Logout", style: TextStyle(color: Colors.redAccent, fontSize: 14)),
-            contentPadding: EdgeInsets.zero,
-          ),
-        ),
-      ],
-    )
+      } catch (e) {
+        // This will now tell you EXACTLY what is wrong in your debug console
+        print("Stripe Portal Error: $e");
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Error: ${e.toString()}")),
+        );
+      }
+    } else if (value == 'privacy') {
+      await launchUrl(Uri.parse('https://thehittersledger.com/privacy'));
+    } else if (value == 'terms') {
+      await launchUrl(Uri.parse('https://thehittersledger.com/terms'));
+    } else if (value == 'logout') {
+      _showLogoutDialog(context); // Calls the confirmation popup
+    }
+  },
+  itemBuilder: (context) => [
+    const PopupMenuItem(
+      value: 'billing',
+      child: ListTile(
+        leading: Icon(Icons.credit_card, size: 20, color: Colors.white70),
+        title: Text("Manage Subscription", style: TextStyle(fontSize: 14)),
+        contentPadding: EdgeInsets.zero,
+      ),
+    ),
+    const PopupMenuDivider(),
+    const PopupMenuItem(
+      value: 'privacy',
+      child: ListTile(
+        leading: Icon(Icons.privacy_tip_outlined, size: 20, color: Colors.white70),
+        title: Text("Privacy Policy", style: TextStyle(fontSize: 14)),
+        contentPadding: EdgeInsets.zero,
+      ),
+    ),
+    const PopupMenuItem(
+      value: 'terms',
+      child: ListTile(
+        leading: Icon(Icons.gavel_outlined, size: 20, color: Colors.white70),
+        title: Text("Terms of Service", style: TextStyle(fontSize: 14)),
+        contentPadding: EdgeInsets.zero,
+      ),
+    ),
+    const PopupMenuDivider(),
+    const PopupMenuItem(
+      value: 'logout',
+      child: ListTile(
+        leading: Icon(Icons.logout, size: 20, color: Colors.redAccent),
+        title: Text("Logout", style: TextStyle(color: Colors.redAccent, fontSize: 14)),
+        contentPadding: EdgeInsets.zero,
+      ),
+    ),
+  ],
+)
   ],
 ),
       body: Stack(
@@ -629,6 +625,29 @@ Widget build(BuildContext context) {
       ),
     );
   }
+  void _showLogoutDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      backgroundColor: const Color(0xFF1A1D21),
+      title: const Text("Logout", style: TextStyle(color: Colors.white)),
+      content: const Text("Are you sure you want to log out?", style: TextStyle(color: Colors.white70)),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text("CANCEL", style: TextStyle(color: Colors.white70)),
+        ),
+        TextButton(
+          onPressed: () async {
+            Navigator.pop(context);
+            await CloudService().signOut(); // Assuming CloudService is your auth class
+          },
+          child: const Text("LOGOUT", style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold)),
+        ),
+      ],
+    ),
+  );
+}
 }
 
 
