@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+  // If the user is already logged in, skip the landing page and go to the app
+  if (localStorage.getItem('isLoggedIn') === 'true') {
+    window.location.href = "/app/";
+  }
+</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Hitter's Ledger | Master Your Plate Appearances</title>
+    <style>
+        :root {
+            --primary-blue: #0084ff; 
+            --accent-cyan: #00d4ff;
+            --dark-bg: #0d1117;   
+            --card-bg: #161b22;  
+            --text-white: #ffffff;
+            --text-silver: #8b949e;
+            --border-gray: #30363d;
+            --qab-green: #50fa7b;
+            --chase-red: #ff5555;
+        }
+
+        body { 
+            font-family: 'Inter', -apple-system, system-ui, sans-serif; 
+            margin: 0; background: var(--dark-bg); color: var(--text-white); line-height: 1.6;
+            scroll-behavior: smooth;
+        }
+
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+
+        /* Navigation */
+        nav {
+            padding: 25px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-gray);
+        }
+        .logo-box { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+        .logo-img { height: 40px; border-radius: 4px; }
+        .logo-text { font-size: 1.2rem; font-weight: 800; color: white; letter-spacing: -0.5px; }
+        .logo-text span { color: var(--primary-blue); }
+
+        /* Hero Section */
+        .hero { padding: 80px 0 60px; text-align: center; }
+        h1 { font-size: clamp(2.5rem, 8vw, 4rem); margin: 0; font-weight: 900; letter-spacing: -2px; line-height: 1.1; }
+        .highlight { color: var(--primary-blue); }
+        p.subtitle { font-size: 1.2rem; color: var(--text-silver); margin: 20px auto 40px; max-width: 650px; }
+
+        .btn-main {
+            background: var(--primary-blue); color: white; padding: 16px 40px;
+            text-decoration: none; border-radius: 6px; font-weight: 700;
+            transition: all 0.3s; display: inline-block;
+            text-transform: uppercase; letter-spacing: 1px;
+        }
+        .btn-main:hover { background: var(--accent-cyan); color: #000; transform: translateY(-2px); }
+
+        /* Video Section */
+        .video-wrapper {
+            margin: 0 auto 80px;
+            max-width: 850px;
+            background: var(--card-bg);
+            padding: 10px;
+            border-radius: 12px;
+            border: 1px solid var(--border-gray);
+        }
+        .video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 6px; }
+        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+
+        /* Showcase Section */
+        .showcase { padding: 80px 0; background: #090c10; border-top: 1px solid var(--border-gray); }
+        .showcase-header { text-align: center; margin-bottom: 50px; }
+        
+        .showcase-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 24px;
+            border: 1px solid var(--border-gray);
+        }
+
+        .showcase-tabs { flex: 1; }
+        .tab {
+            padding: 16px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid transparent;
+        }
+        .tab:hover { background: rgba(255,255,255,0.05); }
+        .tab.active { background: rgba(0, 132, 255, 0.1); border: 1px solid var(--primary-blue); }
+        .tab h4 { margin: 0; font-size: 1.1rem; color: #fff; }
+        .tab.active h4 { color: var(--primary-blue); }
+        .tab p { margin: 4px 0 0; font-size: 0.9rem; color: var(--text-silver); }
+
+        .showcase-display { flex: 1; text-align: center; }
+        .phone-mockup {
+            display: inline-block;
+            width: 300px;
+            border: 12px solid #222;
+            border-radius: 40px;
+            background: #000;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            position: relative;
+            overflow: hidden;
+        }
+        .phone-mockup img { width: 100%; display: block; transition: opacity 0.3s; }
+
+        footer { padding: 40px 0; text-align: center; color: var(--text-silver); font-size: 0.9rem; }
+
+        @media (max-width: 850px) {
+            .showcase-wrapper { flex-direction: column-reverse; padding: 20px; }
+            .phone-mockup { width: 260px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <nav>
+            <a href="#" class="logo-box">
+                <img src="images/hl_logo.png" alt="Logo" class="logo-img">
+                <div class="logo-text">THE HITTER'S <span>LEDGER</span></div>
+            </a>
+            <a href="/app/" class="nav-link">Login</a>
+        </nav>
+
+        <section class="hero">
+            <h1>Master the <span class="highlight">Box.</span></h1>
+            <p class="subtitle">The elite performance hitting ledger built for ballplayers who treat every <span style="white-space: nowrap;">at-bat</span> like a science. Build your database. Own the pitcher.</p>
+            <a href="/app/" class="btn-main">Launch App</a>
+        </section>
+
+        <div class="video-wrapper">
+            <div class="video-container">
+                <iframe src="https://www.youtube.com/embed/A8JpOg_8K-g?modestbranding=1&rel=0" frameborder="0" allowfullscreen></iframe>
+            </div>
+        </div>
+
+<section style="padding: 60px 0; text-align: center;">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px;">
+        <div style="background: var(--card-bg); padding: 30px; border-radius: 12px; border: 1px solid var(--border-gray);">
+            <h3 style="color: var(--primary-blue);">Stop Guessing</h3>
+            <p style="color: var(--text-silver); font-size: 0.9rem;">Don't rely on memory. Track exactly how pitchers are attacking you across every count.</p>
+        </div>
+        <div style="background: var(--card-bg); padding: 30px; border-radius: 12px; border: 1px solid var(--border-gray);">
+            <h3 style="color: var(--primary-blue);">Advanced Analytics</h3>
+            <p style="color: var(--text-silver); font-size: 0.9rem;">From heat maps by pitcher handedness/pitch type to QAB%, Chase Rate, and 1st Pitch Swing %, The Hitter's Ledger has you covered to help you better understand your approach.</p>
+        </div>
+        <div style="background: var(--card-bg); padding: 30px; border-radius: 12px; border: 1px solid var(--border-gray);">
+            <h3 style="color: var(--primary-blue);">Mental Edge</h3>
+            <p style="color: var(--text-silver); font-size: 0.9rem;">Integrate the R-A-K-E method and our mental imagery scripts and audio into your routine to stay calm and locked in under pressure.</p>
+        </div>
+    </div>
+</section>
+        
+        <section class="showcase">
+    <div class="showcase-header">
+        <h2>The Hitter's <span class="highlight">Ledger</span></h2>
+        
+        <div style="display: inline-flex; align-items: center; background: linear-gradient(135deg, #0084ff 0%, #004e98 100%); padding: 10px 20px; border-radius: 12px; margin-top: 15px; box-shadow: 0 4px 15px rgba(0,132,255,0.3); border: 1px solid rgba(255,255,255,0.2);">
+    <div style="text-align: left; border-right: 1px solid rgba(255,255,255,0.3); padding-right: 15px; margin-right: 15px;">
+        <span style="display: block; font-size: 0.7rem; text-transform: uppercase; color: rgba(255,255,255,0.8); font-weight: 700; letter-spacing: 1px;">Pro Monthly</span>
+        <span style="font-size: 1.2rem; color: #fff; font-weight: 800;">$2.99<small style="font-size: 0.7rem; font-weight: 400; opacity: 0.8;"> /mo</small></span>
+    </div>
+    <div style="text-align: left;">
+        <span style="display: block; font-size: 0.7rem; text-transform: uppercase; color: #00d4ff; font-weight: 700; letter-spacing: 1px;">Pro Annual</span>
+        <span style="font-size: 1.2rem; color: #fff; font-weight: 800;">$19.99<small style="font-size: 0.7rem; font-weight: 400; opacity: 0.8;"> /year</small></span>
+    </div>
+</div>
+
+        <p style="margin-top: 15px; font-weight: 600; color: var(--text-white);">
+            Give it a try — the free version allows you to log <span class="highlight">10 at-bats!</span>
+        </p>
+        
+        <p style="margin-top: 5px; color: var(--text-silver); font-size: 0.9rem;">Scroll through the features designed to give you the edge.</p>
+    </div>
+    
+    <div class="showcase-wrapper">
+        <div class="showcase-tabs">
+            <div class="tab active" onclick="updateImg('images/Bat History.png', this)">
+                <h4>At-Bat History</h4>
+                <p>Track every pitcher name, team, and result in a clean searchable list.</p>
+            </div>
+            <div class="tab" onclick="updateImg('images/New Ledger Entry.png', this)">
+                <h4>Precision Logging</h4>
+                <p>Map pitch sequences, velocity, and location in real-time.</p>
+            </div>
+            <div class="tab" onclick="updateImg('images/Chase Rate.png', this)">
+                <h4>Plate Discipline</h4>
+                <p>Monitor your <strong>Chase Rate</strong> to identify which zones are costing you strikes.</p>
+            </div>
+            <div class="tab" onclick="updateImg('images/1st Pitch Swing.png', this)">
+                <h4>First Pitch Aggression</h4>
+                <p>See your <strong>1st Pitch Swing %</strong> and how often you're ahead in the count.</p>
+            </div>
+            <div class="tab" onclick="updateImg('images/Season Stats.png', this)">
+                <h4>Season Analytics</h4>
+                <p>Monitor your AVG, SLG, and OBP alongside advanced metrics.</p>
+            </div>
+            <div class="tab" onclick="updateImg('images/QAB.png', this)">
+                <h4>Quality At-Bats</h4>
+                <p>Break down your QAB% against RHP and LHP.</p>
+            </div>
+            <div class="tab" onclick="updateImg('images/Rake Method.png', this)">
+                <h4>Mental Imagery</h4>
+                <p>Use the R-A-K-E method to breathe and visualize success.</p>
+            </div>
+        </div>
+
+        <div class="showcase-display">
+            <div class="phone-mockup">
+                <img id="feat-img" src="images/At Bat History.png" alt="App Feature">
+            </div>
+        </div>
+    </div>
+</section>
+    </div>
+
+<section style="padding: 80px 0; background: rgba(255,255,255,0.02); border-top: 1px solid var(--border-gray);">
+    <div class="container" style="text-align: center;">
+        <h2 style="margin-bottom: 10px;">Get the <span class="highlight">Full Experience</span></h2>
+        <p style="color: var(--text-silver); margin-bottom: 40px;">No App Store needed. Install The Hitter's Ledger directly to your home screen in seconds.</p>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+            <div style="background: var(--card-bg); padding: 30px; border-radius: 16px; border: 1px solid var(--border-gray); text-align: left;">
+                <h3 style="color: #fff; display: flex; align-items: center; gap: 10px;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.1 2.48-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .76-3.27.82-1.31.05-2.31-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.89 1.22-2.11 1.09-3.31-1.03.04-2.28.68-3.02 1.55-.67.76-1.25 2-1.12 3.17 1.15.09 2.32-.52 3.05-1.41Z"/></svg>
+                    iPhone Users
+                </h3>
+                <ol style="color: var(--text-silver); padding-left: 20px; font-size: 0.95rem;">
+                    <li style="margin-bottom: 12px;">Open <strong>The Hitter's Ledger</strong> in Safari.</li>
+                    <li style="margin-bottom: 12px;">Tap the <strong style="color: var(--primary-blue);">Share</strong> icon (the square with an up arrow).</li>
+                    <li>Select <strong style="color: #fff;">'Add to Home Screen'</strong> from the menu.</li>
+                </ol>
+            </div>
+
+            <div style="background: var(--card-bg); padding: 30px; border-radius: 16px; border: 1px solid var(--border-gray); text-align: left;">
+                <h3 style="color: #fff; display: flex; align-items: center; gap: 10px;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 13c-.83 0-1.5-.67-1.5-1.5S16.67 10 17.5 10s1.5.67 1.5 1.5-.67 1.5-1.5 1.5m-11 0c-.83 0-1.5-.67-1.5-1.5S5.67 10 6.5 10 8 10.67 8 11.5 7.33 13 6.5 13m11.16-5.4l1.6-2.77c.12-.2.05-.45-.15-.57-.2-.12-.45-.05-.57.15l-1.63 2.82c-1.31-.6-2.8-.93-4.41-.93s-3.1.33-4.41.93L6.96 4.41c-.12-.2-.37-.27-.57-.15-.2.12-.27.37-.15.57l1.6 2.77C5.06 9 3 11.51 3 14.5h18c0-2.99-2.06-5.5-4.84-6.9z"/></svg>
+                    Android Users
+                </h3>
+                <ol style="color: var(--text-silver); padding-left: 20px; font-size: 0.95rem;">
+                    <li style="margin-bottom: 12px;">Open the app in <strong>Chrome</strong>.</li>
+                    <li style="margin-bottom: 12px;">Tap the <strong style="color: var(--primary-blue);">three dots</strong> in the top right corner.</li>
+                    <li>Tap <strong style="color: #fff;">'Install App'</strong> or 'Add to Home Screen'.</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+    <div style="margin-top: 40px; text-align: center; opacity: 0.7;">
+    <p style="font-size: 0.85rem; color: var(--text-silver); max-width: 500px; margin: 0 auto;">
+        <strong>Why no App Store?</strong> We built The Hitter's Ledger as a high-performance web app to ensure instant updates, zero tracking from big tech, and a smaller footprint on your device's storage.
+    </p>
+</div>
+    
+    <footer>
+        <p>&copy; 2026 THE HITTER'S LEDGER. Designed for the 1%.</p>
+    </footer>
+
+    <script>
+        function updateImg(src, el) {
+            const img = document.getElementById('feat-img');
+            img.style.opacity = '0';
+            setTimeout(() => {
+                img.src = src;
+                img.style.opacity = '1';
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                el.classList.add('active');
+            }, 200);
+        }
+    </script>
+</body>
+</html>

@@ -48,8 +48,8 @@ class PaywallScreen extends StatelessWidget {
           .collection('checkout_sessions')
           .add({
         'price': priceId,
-        'success_url': html.window.location.origin, // Returns to your home page
-        'cancel_url': html.window.location.origin,
+        'success_url': '${html.window.location.origin}/app?status=success', 
+  'cancel_url': '${html.window.location.origin}/app?status=cancel',
       });
 
       // 3. Listen for the extension to write back a 'url' or an 'error'
@@ -130,7 +130,7 @@ class PaywallScreen extends StatelessWidget {
                   price: "\$2.99",
                   interval: "per month",
                   // IMPORTANT: Ensure these Price IDs match your Stripe Dashboard exactly
-                  priceId: "price_1SyIgZRzEJzK6wa6lbzEnEpa", 
+                  priceId: "price_1T2j0lRzEJzK6wa6Rfkq9c1L", 
                 ),
 
                 const SizedBox(height: 16),
@@ -142,7 +142,7 @@ class PaywallScreen extends StatelessWidget {
                   price: "\$19.99",
                   interval: "per year",
                   isBestValue: true,
-                  priceId: "price_1SyIlARzEJzK6wa6Ajcb7cnv", 
+                  priceId: "price_1T2j17RzEJzK6wa6onBTQviw", 
                 ),
 
                 const SizedBox(height: 40),

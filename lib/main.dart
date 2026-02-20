@@ -423,7 +423,7 @@ PopupMenuButton<String>(
 
         // We pass the returnUrl so Stripe knows where to send them back to
         final results = await callable.call({
-          'returnUrl': 'https://thehittersledger.com', 
+          'returnUrl': 'https://thehittersledger.com/app', 
         });
 
         // 3. The Extension gives us the URL directly in the response
@@ -643,8 +643,19 @@ PopupMenuButton<String>(
         ),
         TextButton(
           onPressed: () async {
-            Navigator.pop(context);
-            await CloudService().signOut(); // Assuming CloudService is your auth class
+            // 1. Update the local storage flag so the landing page knows they are out
+            html.window.localStorage['isLoggedIn'] = 'false';
+
+            // 2. Sign out of Firebase (this triggers your RootWrapper stream)
+            await FirebaseAuth.instance.signOut(); 
+
+            // 3. Close the "Are you sure?" dialog
+            if (context.mounted) {
+              Navigator.pop(context);
+            }
+
+            // 4. Trigger a rebuild to return the user to the Login screen
+            setState(() {});
           },
           child: const Text("LOGOUT", style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold)),
         ),
