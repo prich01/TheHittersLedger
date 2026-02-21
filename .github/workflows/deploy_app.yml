@@ -1,0 +1,33 @@
+name: Build and Deploy Flutter App to Subfolder
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'lib/**'           # Only runs if you change your actual app code
+      - 'pubspec.yaml'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build Web App
+        run: flutter build web --release --base-href "/app/"
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build/web
+          destination_dir: app        # This puts the app at thehittersledger.com/app
+          keep_files: true            # CRITICAL: This prevents it from deleting your landing page!
