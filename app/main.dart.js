@@ -103378,7 +103378,7 @@ return A.lm(!1,r,!0,A.cu(s,A.bP(A.b([A.oK(c,A.ap(204,d.t()>>>16&255,d.t()>>>8&25
 apL(a){A.vm(!0,new A.aBE(),a,t.z)}}
 A.aBH.prototype={
 $1(a){var s=A.ck(16)
-return A.qC(A.b([A.fZ(B.a5_,new A.aBG(a),null)],t.p),B.as,B.a54,new A.cF(s,B.m),B.WM)},
+return A.qC(A.b([A.fZ(B.a50,new A.aBG(a),null)],t.p),B.as,B.a55,new A.cF(s,B.m),B.WM)},
 $S:48}
 A.aBG.prototype={
 $0(){var s=A.cV(this.a,!1),r=s.AF("/",null,t.X)
@@ -103497,7 +103497,7 @@ A.aBA.prototype={
 $1(a){return this.a},
 $S:15}
 A.aBE.prototype={
-$1(a){return A.qC(A.b([A.fZ(B.a5B,new A.aBC(a),null),A.fZ(B.a4J,new A.aBD(),null)],t.p),B.as,B.a53,null,B.a5D)},
+$1(a){return A.qC(A.b([A.fZ(B.a5B,new A.aBC(a),null),A.fZ(B.a4J,new A.aBD(),null)],t.p),B.as,B.a54,null,B.a5D)},
 $S:48}
 A.aBC.prototype={
 $0(){A.cV(this.a,!1).fV(null)
@@ -103884,7 +103884,7 @@ r.w=q==null?B.b.gZ(r.r):q},
 $S:0}
 A.aBh.prototype={
 $1(a){var s=null,r=A.iE(!0,s,B.MU,s,1,!1,new A.aBe(this.a),s,B.mu)
-return A.qC(A.b([A.fZ(B.CG,new A.aBf(a),s),A.fZ(B.a51,new A.aBg(a),s)],t.p),B.as,r,s,B.a4Y)},
+return A.qC(A.b([A.fZ(B.CG,new A.aBf(a),s),A.fZ(B.a52,new A.aBg(a),s)],t.p),B.as,r,s,B.a4Z)},
 $S:48}
 A.aBe.prototype={
 $1(a){return this.a.a=a.toUpperCase()},
@@ -103904,7 +103904,7 @@ A.aBp.prototype={
 $2(a,b){var s=this.a,r=s.r
 r=A.S(new A.X(r,new A.aBn(s,a,b),A.W(r).i("X<1,f>")),t.l7)
 r.push(B.JF)
-r.push(A.aTQ(B.M9,B.a4W,new A.aBo(s,b,a)))
+r.push(A.aTQ(B.M9,B.a4X,new A.aBo(s,b,a)))
 return A.qC(null,B.as,A.ea(A.bP(r,B.q,B.r,B.aY),null,17976931348623157e292),null,B.a5g)},
 $S:671}
 A.aBn.prototype={
@@ -103977,7 +103977,7 @@ $0(){},
 $S:0}
 A.aBd.prototype={
 $1(a){var s=null,r=this.a,q=A.iE(!1,r.CW,B.N1,s,1,!1,s,s,B.mu)
-return A.qC(A.b([A.fZ(B.a50,new A.aBc(r,a),s)],t.p),B.as,q,s,B.a4Z)},
+return A.qC(A.b([A.fZ(B.a51,new A.aBc(r,a),s)],t.p),B.as,q,s,B.a5_)},
 $S:48}
 A.aBc.prototype={
 $0(){var s=this.a,r=s.CW.a.a
@@ -103986,7 +103986,7 @@ A.cV(this.b,!1).fV(null)}},
 $S:0}
 A.aB3.prototype={
 $1(a){var s=null,r=A.ck(12),q=this.b,p=A.aH("Are you sure you want to delete this at-bat against "+q.a+"?",s,s,s,s,s,s,s)
-return A.qC(A.b([A.fZ(B.a52,new A.aB1(a),s),A.fZ(B.a5u,new A.aB2(this.a,q,a),s)],t.p),B.as,p,new A.cF(r,B.m),B.a5a)},
+return A.qC(A.b([A.fZ(B.a53,new A.aB1(a),s),A.fZ(B.a5u,new A.aB2(this.a,q,a),s)],t.p),B.as,p,new A.cF(r,B.m),B.a5b)},
 $S:48}
 A.aB1.prototype={
 $0(){return A.cV(this.a,!1).eS()},
@@ -104313,7 +104313,7 @@ k=A.jg(B.bP)
 j=A.b([],t.wi)
 i=$.am
 r.iu(new A.En(new A.ayE(g,this,a),q,!0,0.5625,B.B,h,h,h,h,s.ry.e,!0,!0,h,h,h,!1,h,"Close Bottom Sheet",new A.cj(B.a5,p),"Scrim",h,h,h,o,A.aR(t.f9),new A.br(h,t.Ts),new A.br(h,t.A),new A.tr(),h,0,new A.b7(new A.an(n,m),l),k,j,h,B.fN,new A.cj(h,p),new A.b7(new A.an(i,m),l),new A.b7(new A.an(i,m),l),t.Fu))},
-K(a){var s,r,q,p,o,n=this,m=null,l=A.kT(m,m,m,m,B.a5c),k=t.p,j=A.d0(A.b([A.hO(A.iE(!1,n.x,B.N2,m,1,!1,m,m,B.bZ),1),B.mn,A.hO(A.iE(!1,n.f,B.MT,B.a_C,1,!1,m,m,B.bZ),1)],k),B.q,B.r,B.t,0),i=A.d0(A.b([A.hO(A.iE(!1,n.d,B.MR,m,1,!1,m,m,B.bZ),1),B.mn,A.hO(A.iE(!1,n.e,B.N_,m,1,!1,m,m,B.bZ),1)],k),B.q,B.r,B.t,0),h=n.Q,g=t.fo
+K(a){var s,r,q,p,o,n=this,m=null,l=A.kT(m,m,m,m,B.a5d),k=t.p,j=A.d0(A.b([A.hO(A.iE(!1,n.x,B.N2,m,1,!1,m,m,B.bZ),1),B.mn,A.hO(A.iE(!1,n.f,B.MT,B.a_C,1,!1,m,m,B.bZ),1)],k),B.q,B.r,B.t,0),i=A.d0(A.b([A.hO(A.iE(!1,n.d,B.MR,m,1,!1,m,m,B.bZ),1),B.mn,A.hO(A.iE(!1,n.e,B.N_,m,1,!1,m,m,B.bZ),1)],k),B.q,B.r,B.t,0),h=n.Q,g=t.fo
 g=A.S(new A.X(A.b(["R","L"],t.s),new A.ayL(),g),g.i("ab.E"))
 s=t.N
 h=A.hO(A.aLu(B.MY,g,new A.ayM(n),h,s),1)
@@ -104328,7 +104328,7 @@ p=n.y
 p=new A.rZ(p,A.W(p).i("rZ<1>"))
 B.b.U(q,p.ghF(p).dd(0,new A.ayP(),t.l7))
 g=A.dJ(A.cu(m,A.oH(B.az,A.hs(B.bl,q,B.F,B.b_,m),B.Z,!1,m,m,m,m,m,m,m,m,m,m,m,m,m,m,m,m,new A.ayQ(n),m,m,m,m),B.o,m,new A.bN(B.l,m,r,g,m,m,B.S),m,330,m,m,m,m,300),m,m)
-r=A.aTQ(B.Me,B.a58,new A.ayR(n))
+r=A.aTQ(B.Me,B.a59,new A.ayR(n))
 q=n.z
 p=n.ax
 o=A.W(p).i("X<1,hN<l>>")
@@ -104498,7 +104498,7 @@ n=q.e
 s=n?B.pY:B.lc
 s=A.oK(s,n?B.ac:B.p,p,p)
 r=n?"STOP MEDITATION":"PLAY MEDITATION SCRIPT"
-return A.jj(o,p,A.jo(A.bP(A.b([A.dJ(A.aQK(s,A.aH(r,p,p,p,p,A.dY(p,p,n?B.ac:B.j,p,p,p,p,p,p,p,p,p,p,p,B.K,p,p,!0,p,p,p,p,p,p,p,p),p,p),new A.aDF(q),m),p,p),B.d0,B.a4X],t.p),B.q,B.r,B.t),p,B.Z,B.pe,p,B.a7),p)}}
+return A.jj(o,p,A.jo(A.bP(A.b([A.dJ(A.aQK(s,A.aH(r,p,p,p,p,A.dY(p,p,n?B.ac:B.j,p,p,p,p,p,p,p,p,p,p,p,B.K,p,p,!0,p,p,p,p,p,p,p,p),p,p),new A.aDF(q),m),p,p),B.d0,B.a4Y],t.p),B.q,B.r,B.t),p,B.Z,B.pe,p,B.a7),p)}}
 A.aDH.prototype={
 $1(a){var s=this.a
 s.W(new A.aDG(s))},
@@ -104563,7 +104563,7 @@ g=k.x
 s=g?B.pY:B.lc
 s=A.oK(s,g?B.ac:B.p,j,18)
 r=g?"STOP AUDIO":"RAKE AUDIO"
-f=A.bP(A.b([A.d0(A.b([B.a57,A.aQK(s,A.aH(r,j,j,j,j,A.dY(j,j,g?B.ac:B.j,j,j,j,j,j,j,j,j,10,j,j,B.K,j,j,!0,j,j,j,j,j,j,j,j),j,j),new A.aEd(k),f)],q),B.q,B.cc,B.t,0),B.C1,B.a5d],q),B.ay,B.r,B.t)
+f=A.bP(A.b([A.d0(A.b([B.a58,A.aQK(s,A.aH(r,j,j,j,j,A.dY(j,j,g?B.ac:B.j,j,j,j,j,j,j,j,j,10,j,j,B.K,j,j,!0,j,j,j,j,j,j,j,j),j,j),new A.aEd(k),f)],q),B.q,B.cc,B.t,0),B.C1,B.a5e],q),B.ay,B.r,B.t)
 s=k.ze("RELAX","6-2-8 BREATHING","Inhale 6 seconds, Hold 2 seconds, Exhale 8 seconds.",B.LL,B.bq)
 r=k.ze("ACKNOWLEDGE","WHO YOU ARE","Repeat statements of affirmation.",B.LF,B.wC)
 p=k.ze("KNOW","YOUR PAST SUCCESS","Replay previous highlights in your mind.",B.pT,B.lE)
@@ -104637,7 +104637,7 @@ return A.jj(A.kT(r,r,r,r,B.a5i),r,A.jo(A.bP(A.b([B.a5f,B.cz,B.a4P,B.d0,s.zd("Que
 zd(a){var s=null,r=A.ck(12),q=A.ev(A.ap(13,B.j.t()>>>16&255,B.j.t()>>>8&255,B.j.t()&255),1)
 return A.cu(s,A.aH(a,s,s,s,s,B.a24,s,s),B.o,s,new A.bN(B.as,s,q,r,s,s,B.S),s,s,B.kw,B.cR,s,s,1/0)}}
 A.Vf.prototype={
-K(a){var s=null,r=A.b(["Breathe","Be Aggressive","Be on Time","Stay Short","Attack","Believe"],t.s),q=A.kT(s,s,s,s,B.a55),p=A.aH("Have you ever really assessed how you talk to yourself? This can be a really big deal when you are hitting and have a significant effect on the outcome of your at bats. One common mistake that hitters make is thinking too much. Often this includes thoughts about your swing mechanics. The time to think about mechanics is during practice or cage work. In a game its time to trust your practice and hit!",s,s,s,s,B.h2,s,s),o=A.aH("This is where a swing thought comes in. To be successful you do have to focus but it is important not to overload yourself with too much information. This can cause paralysis by analysis. Instead, remind yourself of a short verbal cue to keep you focused on the task at hand. This short verbal cue is what I refer to as a swing thought. Focus on what you need to do to have success and keep it simple. I like to encourage guys to write these thoughts on a small piece of paper and tape them to their bat just above the handle. This provides a focal point and a reminder of your focus when you step in the box.",s,s,s,s,B.h2,s,s),n=A.aH("Everybody is different so swing thoughts vary and yours can even change throughout the course of a season. Examples include short words or phrases such as:",s,s,s,s,B.h2,s,s),m=t.rD
+K(a){var s=null,r=A.b(["Breathe","Be Aggressive","Be on Time","Stay Short","Attack","Believe"],t.s),q=A.kT(s,s,s,s,B.a56),p=A.aH("Have you ever really assessed how you talk to yourself? This can be a really big deal when you are hitting and have a significant effect on the outcome of your at bats. One common mistake that hitters make is thinking too much. Often this includes thoughts about your swing mechanics. The time to think about mechanics is during practice or cage work. In a game its time to trust your practice and hit!",s,s,s,s,B.h2,s,s),o=A.aH("This is where a swing thought comes in. To be successful you do have to focus but it is important not to overload yourself with too much information. This can cause paralysis by analysis. Instead, remind yourself of a short verbal cue to keep you focused on the task at hand. This short verbal cue is what I refer to as a swing thought. Focus on what you need to do to have success and keep it simple. I like to encourage guys to write these thoughts on a small piece of paper and tape them to their bat just above the handle. This provides a focal point and a reminder of your focus when you step in the box.",s,s,s,s,B.h2,s,s),n=A.aH("Everybody is different so swing thoughts vary and yours can even change throughout the course of a season. Examples include short words or phrases such as:",s,s,s,s,B.h2,s,s),m=t.rD
 m=A.S(new A.X(r,new A.asi(),m),m.i("ab.E"))
 return A.jj(q,s,A.jo(A.bP(A.b([B.a4I,B.cz,p,B.dC,o,B.dC,n,B.C0,A.aUy(m,12,12),B.d0,A.aH("Take some time to think about areas you may struggle. Don\u2019t talk negative to yourself. Instead, phrase things in the positive. What are some things you need to focus on more in your at bats? Remember to keep it simple.",s,s,s,s,B.h2,s,s),B.dC,B.a5t,B.dD],t.p),B.ay,B.r,B.t),s,B.Z,B.cS,s,B.a7),s)}}
 A.asi.prototype={
@@ -104790,7 +104790,7 @@ case 6:case 1:return A.o(q,r)
 case 2:return A.n(o.at(-1),r)}})
 return A.p($async$vd,r)},
 K(a){var s=null
-return A.jj(A.kT(s,B.bq,s,0,B.a5e),B.j,A.jo(A.dJ(A.cu(s,A.bP(A.b([B.M3,B.mo,B.a4Q,B.dD,this.acT(a,"per month","https://buy.stripe.com/7sY8wR0L43BR62LbjZ8EM00","$2.99","Monthly Subscription"),B.dC,this.RU(a,"per year",!0,"https://buy.stripe.com/cNifZj2Tca0f0Ir4VB8EM01","$19.99","Annual Pro Pass"),B.dD,A.fZ(B.a5x,new A.am0(a),s)],t.p),B.q,B.r,B.t),B.o,B.Ee,s,s,s,s,s,s,s,s),s,s),s,B.Z,B.KA,s,B.a7),s)},
+return A.jj(A.kT(s,B.bq,s,0,B.a4U),B.j,A.jo(A.dJ(A.cu(s,A.bP(A.b([B.M3,B.mo,B.a4Q,B.dD,this.acT(a,"per month","https://buy.stripe.com/7sY8wR0L43BR62LbjZ8EM00","$2.99","Monthly Subscription"),B.dC,this.RU(a,"per year",!0,"https://buy.stripe.com/cNifZj2Tca0f0Ir4VB8EM01","$19.99","Annual Pro Pass"),B.dD,A.fZ(B.a5x,new A.am0(a),s)],t.p),B.q,B.r,B.t),B.o,B.Ee,s,s,s,s,s,s,s,s),s,s),s,B.Z,B.KA,s,B.a7),s)},
 RU(a,b,c,d,e,f){var s,r,q,p,o=null,n=c?B.bq:B.k7
 n=A.ev(n,c?2.5:1)
 s=A.ck(15)
@@ -104801,7 +104801,7 @@ if(c)p.push(B.a4F)
 p.push(A.aH(f,o,o,o,o,B.a3t,o,o))
 p.push(A.aH(e+" "+b,o,o,o,o,A.dY(o,o,B.cM,o,o,o,o,o,o,o,o,16,o,o,o,o,o,!0,o,o,o,o,o,o,o,o),o,o))
 p=A.hO(A.bP(p,B.ay,B.r,B.t),1)
-return A.cu(o,A.d0(A.b([p,A.acn(B.a4U,new A.am_(this,a,d),A.CG(o,o,c?B.bq:B.a2,o,o,o,o,o,o,B.j,o,o,o,o,o,o,o,o,o,o))],q),B.q,B.cc,B.t,0),B.o,o,new A.bN(r,o,n,s,o,o,B.S),o,o,o,B.cS,o,o,o)},
+return A.cu(o,A.d0(A.b([p,A.acn(B.a4V,new A.am_(this,a,d),A.CG(o,o,c?B.bq:B.a2,o,o,o,o,o,o,B.j,o,o,o,o,o,o,o,o,o,o))],q),B.q,B.cc,B.t,0),B.o,o,new A.bN(r,o,n,s,o,o,B.S),o,o,o,B.cS,o,o,o)},
 acT(a,b,c,d,e){return this.RU(a,b,!1,c,d,e)}}
 A.am0.prototype={
 $0(){A.cV(this.a,!1).fV(null)
@@ -111259,14 +111259,14 @@ B.P3=s([B.M_,B.BU,B.a4S],t.p)
 B.WM=new A.tZ(B.ap,B.r,B.t,B.q,null,B.bL,null,0,B.P3,null)
 B.Md=new A.cq(B.lc,null,B.ac,null,null)
 B.a2H=new A.t(!0,B.j,null,null,null,null,null,B.K,null,1.2,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null)
-B.a4V=new A.b3("WATCH APP TUTORIAL",null,B.a2H,null,null,null,null,null,null,null)
-B.NR=s([B.Md,B.BU,B.a4V],t.p)
+B.a4W=new A.b3("WATCH APP TUTORIAL",null,B.a2H,null,null,null,null,null,null,null)
+B.NR=s([B.Md,B.BU,B.a4W],t.p)
 B.WN=new A.tZ(B.ap,B.du,B.t,B.q,null,B.bL,null,0,B.NR,null)
 B.Mk=new A.cq(B.pQ,14,B.p,null,null)
 B.BW=new A.dr(4,null,null,null)
 B.CC=new A.t(!0,B.p,null,null,null,null,12,B.K,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null)
-B.a56=new A.b3("PRO",null,B.CC,null,null,null,null,null,null,null)
-B.NV=s([B.Mk,B.BW,B.a56],t.p)
+B.a57=new A.b3("PRO",null,B.CC,null,null,null,null,null,null,null)
+B.NV=s([B.Mk,B.BW,B.a57],t.p)
 B.WO=new A.tZ(B.ap,B.r,B.t,B.q,null,B.bL,null,0,B.NV,null)
 B.WP=new A.dV("allow-downloads","allow-downloads")
 B.iD=new A.dV("allow-scripts","allow-scripts")
@@ -111567,10 +111567,10 @@ B.Zs=new A.lJ(5,"timeout")
 B.Zt=new A.yn(null,null,null,null,null,null,null,null,null,null,null,null,null,null)
 B.a5o=new A.b3("Opening billing portal...",null,null,null,null,null,null,null,null,null)
 B.Zu=new A.kt(B.a5o,null,null,null,null,null,null,null,null,null,null,null,null,B.cr,!1,null,null,null,B.F,null)
-B.a5b=new A.b3("SCOUTING REPORT COPIED",null,null,null,null,null,null,null,null,null)
-B.Zv=new A.kt(B.a5b,null,null,null,null,null,null,null,null,null,null,null,null,B.cr,!1,null,null,null,B.F,null)
-B.a59=new A.b3("Please log in to make a purchase.",null,null,null,null,null,null,null,null,null)
-B.Zw=new A.kt(B.a59,null,null,null,null,null,null,null,null,null,null,null,null,B.cr,!1,null,null,null,B.F,null)
+B.a5c=new A.b3("SCOUTING REPORT COPIED",null,null,null,null,null,null,null,null,null)
+B.Zv=new A.kt(B.a5c,null,null,null,null,null,null,null,null,null,null,null,null,B.cr,!1,null,null,null,B.F,null)
+B.a5a=new A.b3("Please log in to make a purchase.",null,null,null,null,null,null,null,null,null)
+B.Zw=new A.kt(B.a5a,null,null,null,null,null,null,null,null,null,null,null,null,B.cr,!1,null,null,null,B.F,null)
 B.a5q=new A.b3("Could not open tutorial video.",null,null,null,null,null,null,null,null,null)
 B.Zx=new A.kt(B.a5q,null,null,null,null,null,null,null,null,null,null,null,null,B.cr,!1,null,null,null,B.F,null)
 B.a5s=new A.b3("ENTRY DELETED",null,null,null,null,null,null,null,null,null)
@@ -112018,33 +112018,33 @@ B.a4Q=new A.b3("Purchase A Pro Pass",null,B.a1F,B.dE,null,null,null,null,null,nu
 B.a4R=new A.b3("SWING & MISS?",null,B.mD,null,null,null,null,null,null,null)
 B.a4e=new A.t(!0,B.p,null,null,null,null,28,B.aS,null,3,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null)
 B.a4T=new A.b3("THE HITTER'S LEDGER",null,B.a4e,B.dE,null,null,null,null,null,null)
-B.a4U=new A.b3("Select",null,null,null,null,null,null,null,null,null)
+B.a4U=new A.b3("Upgrade to Pro Pass!",null,null,null,null,null,null,null,null,null)
+B.a4V=new A.b3("Select",null,null,null,null,null,null,null,null,null)
 B.j6=new A.t(!0,B.p,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null)
-B.a4W=new A.b3("ADD NEW SEASON",null,B.j6,null,null,null,null,null,null,null)
+B.a4X=new A.b3("ADD NEW SEASON",null,B.j6,null,null,null,null,null,null,null)
 B.a1N=new A.t(!0,B.O,null,null,null,null,15,null,null,null,null,null,1.8,null,null,null,null,null,null,null,null,null,null,null,null,null)
-B.a4X=new A.b3("It\u2019s time to relax. Time to let all the worry of today drift away. You are seated comfortably, and are about to consciously relax all of your muscles, one by one. Start with your hands. Let your fingers go limp\u2026 now your palms\u2026 now your wrists. Your forearms are completely relaxed now, and your elbows\u2026 your shoulders\u2026 and your back.\n\nRelax the muscles in your face. Your eyelids droop shut\u2026 the tension goes out of your neck. Your hips are loose and your thighs\u2026 your knees\u2026 your calves. Now your feet are going limp, every toe is relaxing. You are completely relaxed from head to toe. Breathe slowly and deeply from your diaphragm ten times, counting to five on each inhale, and five on each exhale.\n\nIn your mind, open your eyes. Ahead of you, there is a door, centered in the wall about ten steps away from you. You are going to walk towards that door, and with each step the worries and anxieties you are dealing with today will drift further and further away until all you see is the door.\n\nTake one slow step toward the door. One. Take another step. Two. Another. Three. As you near the door, it begins to glow softly. Four. It is a warm welcoming light. Five. The door is beginning to swing open. Six. Through the door is light. Seven. Through the door is warmth. Eight. Through the door is safety. Nine. You are about to step through the door. Ten.\n\nYou are standing, looking through the door at a baseball field. Step through the door, and shut it behind you. The sun is warm\u2026 The field is perfect\u2026 you can smell the fresh cut grass. Walk slowly to the field enjoying the gentle breeze and thinking how great it will be to play a game today and to be so relaxed and carefree.\n\nSee yourself at the plate. Feel your feet as you dig in the batters box and feel yourself grip the bat. Look up to see the pitcher on the mound getting ready to deliver a pitch. See the pitch travel to your perfect location. Feel the ball hit the sweet spot of the barrel as you drive the baseball and know that this pitcher cannot beat you. Feel the confidence you have knowing that you are in control of the situation and take in the feeling of playing the game with the same approach that you had when you were 8 years old. NO WORRIES\u2026 NO FEAR\u2026 JUST FUN\n\nIt\u2019s been a great game today. Now you see a door about ten steps away, coming into shape.\n\nTen. When you walk through the door you will be energized\nNine. When you walk through the door, you will be well rested\nEight. When you walk through the door, you will feel ready for today\nSeven. On the other side of that door is the world you left.\nSix. However, it has changed in your absence.\nFive. It is a calmer version of the world\nFour. There is nothing in the world that you cannot handle\nThree. You will have a great day today\nTwo. Are you ready?\nOne. Step through the door and open your eyes",null,B.a1N,null,null,null,null,null,null,null)
+B.a4Y=new A.b3("It\u2019s time to relax. Time to let all the worry of today drift away. You are seated comfortably, and are about to consciously relax all of your muscles, one by one. Start with your hands. Let your fingers go limp\u2026 now your palms\u2026 now your wrists. Your forearms are completely relaxed now, and your elbows\u2026 your shoulders\u2026 and your back.\n\nRelax the muscles in your face. Your eyelids droop shut\u2026 the tension goes out of your neck. Your hips are loose and your thighs\u2026 your knees\u2026 your calves. Now your feet are going limp, every toe is relaxing. You are completely relaxed from head to toe. Breathe slowly and deeply from your diaphragm ten times, counting to five on each inhale, and five on each exhale.\n\nIn your mind, open your eyes. Ahead of you, there is a door, centered in the wall about ten steps away from you. You are going to walk towards that door, and with each step the worries and anxieties you are dealing with today will drift further and further away until all you see is the door.\n\nTake one slow step toward the door. One. Take another step. Two. Another. Three. As you near the door, it begins to glow softly. Four. It is a warm welcoming light. Five. The door is beginning to swing open. Six. Through the door is light. Seven. Through the door is warmth. Eight. Through the door is safety. Nine. You are about to step through the door. Ten.\n\nYou are standing, looking through the door at a baseball field. Step through the door, and shut it behind you. The sun is warm\u2026 The field is perfect\u2026 you can smell the fresh cut grass. Walk slowly to the field enjoying the gentle breeze and thinking how great it will be to play a game today and to be so relaxed and carefree.\n\nSee yourself at the plate. Feel your feet as you dig in the batters box and feel yourself grip the bat. Look up to see the pitcher on the mound getting ready to deliver a pitch. See the pitch travel to your perfect location. Feel the ball hit the sweet spot of the barrel as you drive the baseball and know that this pitcher cannot beat you. Feel the confidence you have knowing that you are in control of the situation and take in the feeling of playing the game with the same approach that you had when you were 8 years old. NO WORRIES\u2026 NO FEAR\u2026 JUST FUN\n\nIt\u2019s been a great game today. Now you see a door about ten steps away, coming into shape.\n\nTen. When you walk through the door you will be energized\nNine. When you walk through the door, you will be well rested\nEight. When you walk through the door, you will feel ready for today\nSeven. On the other side of that door is the world you left.\nSix. However, it has changed in your absence.\nFive. It is a calmer version of the world\nFour. There is nothing in the world that you cannot handle\nThree. You will have a great day today\nTwo. Are you ready?\nOne. Step through the door and open your eyes",null,B.a1N,null,null,null,null,null,null,null)
 B.Cz=new A.t(!0,B.p,null,null,null,null,14,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null)
-B.a4Y=new A.b3("NEW SEASON NAME",null,B.Cz,null,null,null,null,null,null,null)
-B.a4Z=new A.b3("WELCOME, HITTER",null,B.j4,null,null,null,null,null,null,null)
+B.a4Z=new A.b3("NEW SEASON NAME",null,B.Cz,null,null,null,null,null,null,null)
+B.a5_=new A.b3("WELCOME, HITTER",null,B.j4,null,null,null,null,null,null,null)
 B.a2c=new A.t(!0,B.bq,null,null,null,null,null,B.K,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null)
-B.a5_=new A.b3("GET STARTED",null,B.a2c,null,null,null,null,null,null,null)
-B.a50=new A.b3("START",null,B.j6,null,null,null,null,null,null,null)
-B.a51=new A.b3("ADD",null,B.j6,null,null,null,null,null,null,null)
+B.a50=new A.b3("GET STARTED",null,B.a2c,null,null,null,null,null,null,null)
+B.a51=new A.b3("START",null,B.j6,null,null,null,null,null,null,null)
+B.a52=new A.b3("ADD",null,B.j6,null,null,null,null,null,null,null)
 B.a3q=new A.t(!0,B.c5,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null)
-B.a52=new A.b3("CANCEL",null,B.a3q,null,null,null,null,null,null,null)
+B.a53=new A.b3("CANCEL",null,B.a3q,null,null,null,null,null,null,null)
 B.mA=new A.t(!0,B.O,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null)
-B.a53=new A.b3("Are you sure you want to log out?",null,B.mA,null,null,null,null,null,null,null)
-B.a54=new A.b3("Welcome to the Big Leagues! Your unlimited access is now active. Let's get to work.",null,B.mA,null,null,null,null,null,null,null)
-B.a55=new A.b3("SWING THOUGHTS",null,null,null,null,null,null,null,null,null)
+B.a54=new A.b3("Are you sure you want to log out?",null,B.mA,null,null,null,null,null,null,null)
+B.a55=new A.b3("Welcome to the Big Leagues! Your unlimited access is now active. Let's get to work.",null,B.mA,null,null,null,null,null,null,null)
+B.a56=new A.b3("SWING THOUGHTS",null,null,null,null,null,null,null,null,null)
 B.a0i=new A.t(!0,B.p,null,null,null,null,24,B.aS,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null)
-B.a57=new A.b3("R-A-K-E",null,B.a0i,null,null,null,null,null,null,null)
+B.a58=new A.b3("R-A-K-E",null,B.a0i,null,null,null,null,null,null,null)
 B.a13=new A.t(!0,B.ac,null,null,null,null,11,B.K,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null)
-B.a58=new A.b3("CLEAR LAST PITCH",null,B.a13,null,null,null,null,null,null,null)
-B.a5a=new A.b3("DELETE ENTRY?",null,B.j4,null,null,null,null,null,null,null)
-B.a5c=new A.b3("NEW LEDGER ENTRY",null,null,null,null,null,null,null,null,null)
+B.a59=new A.b3("CLEAR LAST PITCH",null,B.a13,null,null,null,null,null,null,null)
+B.a5b=new A.b3("DELETE ENTRY?",null,B.j4,null,null,null,null,null,null,null)
+B.a5d=new A.b3("NEW LEDGER ENTRY",null,null,null,null,null,null,null,null,null)
 B.a2f=new A.t(!0,B.c5,null,null,null,null,12,B.K,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null)
-B.a5d=new A.b3("METHOD OF MENTAL IMAGERY",null,B.a2f,null,null,null,null,null,null,null)
-B.a5e=new A.b3("Upgrade to Pro Pass",null,null,null,null,null,null,null,null,null)
+B.a5e=new A.b3("METHOD OF MENTAL IMAGERY",null,B.a2f,null,null,null,null,null,null,null)
 B.a5f=new A.b3("IDENTIFY YOUR HITTING ROUTINE",null,B.CA,null,null,null,null,null,null,null)
 B.a5g=new A.b3("SELECT SEASON",null,B.Cz,null,null,null,null,null,null,null)
 B.a05=new A.t(!0,B.ac,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null)
