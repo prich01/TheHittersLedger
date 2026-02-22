@@ -41,7 +41,7 @@ class PaywallScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Upgrade to Pro Pass'),
+        title: const Text('Upgrade to Pro Pass!'),
         backgroundColor: Colors.blueAccent,
         elevation: 0,
       ),
