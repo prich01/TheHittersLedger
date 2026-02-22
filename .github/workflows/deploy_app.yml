@@ -1,34 +1,32 @@
-name: Build and Deploy Flutter App to Subfolder
+name: Build and Deploy Flutter App
+
 on:
   push:
     branches:
-      - main
-    paths:
-      - 'app/lib/**'        # Now watching the new folder
-      - 'app/pubspec.yaml'   # Now watching the new folder
-      - '.github/workflows/deploy_app.yml' # Watches itself for changes
+      - [cite_start]main  # Matches your active branch 
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-          
+
       - name: Install dependencies
-        run: flutter pub get  # Removed the working-directory line
+        run: flutter pub get
 
       - name: Build Web App
-        run: flutter build web --release --base-href "/app/" # Removed the working-directory line
+        run: flutter build web --release --base-href "/app/"
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./build/web  # The standard build location
-          destination_dir: app      # This puts the build INTO the app folder on the site
+          publish_dir: ./build/web
+          destination_dir: app
           keep_files: true
