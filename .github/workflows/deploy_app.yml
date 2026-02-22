@@ -4,8 +4,8 @@ on:
     branches:
       - main
     paths:
-      - 'lib/**'           # Only runs if you change your actual app code
-      - 'pubspec.yaml'
+      - 'app/lib/**'
+      - 'app/pubspec.yaml'
 
 jobs:
   build-and-deploy:
@@ -19,15 +19,17 @@ jobs:
           channel: 'stable'
           
       - name: Install dependencies
+        working-directory: app  # <--- Step inside the app folder
         run: flutter pub get
 
       - name: Build Web App
+        working-directory: app  # <--- Step inside the app folder
         run: flutter build web --release --base-href "/app/"
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./build/web
-          destination_dir: app        # This puts the app at thehittersledger.com/app
-          keep_files: true            # CRITICAL: This prevents it from deleting your landing page!
+          publish_dir: ./app/build/web  # <--- Point to the build inside the app folder
+          destination_dir: app
+          keep_files: true
