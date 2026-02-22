@@ -4,8 +4,9 @@ on:
     branches:
       - main
     paths:
-      - 'app/lib/**'
-      - 'app/pubspec.yaml'
+      - 'app/lib/**'        # Now watching the new folder
+      - 'app/pubspec.yaml'   # Now watching the new folder
+      - '.github/workflows/deploy_app.yml' # Watches itself for changes
 
 jobs:
   build-and-deploy:
