@@ -276,5 +276,30 @@
             }, 200);
         }
     </script>
+
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+      import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+      // IMPORTANT: Replace these with the values from your firebase_options.dart
+      const firebaseConfig = {
+        apiKey: 'AIzaSyAo2jJxW1i2d7Pqw-2VZmNJl0_rUvcJeT4',
+        authDomain: "thehittersledger.firebaseapp.com",
+        projectId: "thehittersledger",
+        storageBucket: "thehittersledger.appspot.com",
+        messagingSenderId: '798601163744',
+        appId: '1:798601163744:web:6f6c9edc7448f4079f7185'
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          console.log("Logged in user detected. Redirecting to app...");
+          window.location.href = "/app/";
+        }
+      });
+    </script>
 </body>
 </html>

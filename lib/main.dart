@@ -629,41 +629,41 @@ PopupMenuButton<String>(
       ),
     );
   }
+
   void _showLogoutDialog(BuildContext context) {
-  showDialog(
-    context: context,
-    builder: (context) => AlertDialog(
-      backgroundColor: const Color(0xFF1A1D21),
-      title: const Text("Logout", style: TextStyle(color: Colors.white)),
-      content: const Text("Are you sure you want to log out?", style: TextStyle(color: Colors.white70)),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text("CANCEL", style: TextStyle(color: Colors.white70)),
-        ),
-        TextButton(
-          onPressed: () async {
-            // 1. Update the local storage flag so the landing page knows they are out
-            html.window.localStorage['isLoggedIn'] = 'false';
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF1A1D21),
+        title: const Text("Logout", style: TextStyle(color: Colors.white)),
+        content: const Text("Are you sure you want to log out?", style: TextStyle(color: Colors.white70)),
+        actions: [
+          // CANCEL BUTTON
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("CANCEL", style: TextStyle(color: Colors.white70)),
+          ),
+          // LOGOUT BUTTON
+          TextButton(
+            onPressed: () async {
+              // 1. Sign out of Firebase
+              await FirebaseAuth.instance.signOut();
 
-            // 2. Sign out of Firebase (this triggers your RootWrapper stream)
-            await FirebaseAuth.instance.signOut(); 
+              // 2. Clear local storage
+              html.window.localStorage.remove('isLoggedIn');
 
-            // 3. Close the "Are you sure?" dialog
-            if (context.mounted) {
-              Navigator.pop(context);
-            }
-
-            // 4. Trigger a rebuild to return the user to the Login screen
-            setState(() {});
-          },
-          child: const Text("LOGOUT", style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold)),
-        ),
-      ],
-    ),
-  );
-}
-}
+              // 3. Redirect to Landing Page
+              html.window.location.href = "https://thehittersledger.com"; 
+            },
+            child: const Text(
+              "LOGOUT", 
+              style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold)
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
 
 
