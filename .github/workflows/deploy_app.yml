@@ -20,17 +20,15 @@ jobs:
           channel: 'stable'
           
       - name: Install dependencies
-        working-directory: app  # <--- Step inside the app folder
-        run: flutter pub get
+        run: flutter pub get  # Removed the working-directory line
 
       - name: Build Web App
-        working-directory: app  # <--- Step inside the app folder
-        run: flutter build web --release --base-href "/app/"
+        run: flutter build web --release --base-href "/app/" # Removed the working-directory line
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./app/build/web  # <--- Point to the build inside the app folder
-          destination_dir: app
+          publish_dir: ./build/web  # The standard build location
+          destination_dir: app      # This puts the build INTO the app folder on the site
           keep_files: true
