@@ -48,6 +48,7 @@ class PaywallScreen extends StatelessWidget {
           .collection('checkout_sessions')
           .add({
         'price': priceId,
+        'allow_promotion_codes': true,
         'success_url': '${html.window.location.origin}/app?status=success', 
   'cancel_url': '${html.window.location.origin}/app?status=cancel',
       });
