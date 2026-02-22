@@ -4,8 +4,6 @@ import 'dart:html' as html;
 import 'dart:convert';
 import 'dart:async';
 import 'dart:ui' as ui;
-import 'dart:io';
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/rendering.dart';
@@ -27,12 +25,17 @@ import 'services/cloud_service.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 
 Future<void> main() async {
-  // 1. Immediate capture for cold starts
-  String currentUrl = html.window.location.href;
-  print("DEBUG 0: Initial URL: $currentUrl");
-
   WidgetsFlutterBinding.ensureInitialized();
+  
+  // Use kIsWeb to ensure this only runs in the browser
+  if (kIsWeb) {
+    String currentUrl = html.window.location.href;
+    print("DEBUG 0: Initial URL: $currentUrl");
+  }
+
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  runApp(const HittersLedgerApp());
+}
 
   
 
