@@ -11,7 +11,6 @@ import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:audioplayers/audioplayers.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -37,10 +36,6 @@ Future<void> main() async {
   runApp(const HittersLedgerApp());
 }
 
-  
-
-  runApp(const HittersLedgerApp());
-}
 
 class HittersLedgerApp extends StatelessWidget {
   const HittersLedgerApp({super.key});
@@ -2334,9 +2329,10 @@ class _RakeMethodScreenState extends State<RakeMethodScreen> {
 
   @override
 void dispose() {
-  _audioPlayer.dispose(); // Cleans up the audio player
-  // If you have a TabController or AnimationController, dispose them here too!
-  super.dispose();        // Always keep this as the very last line
+  _timer?.cancel(); // Add this to stop the breathing timer
+  _audioPlayer.stop(); // Stop the audio
+  _audioPlayer.dispose(); 
+  super.dispose();
 }
 
   @override
